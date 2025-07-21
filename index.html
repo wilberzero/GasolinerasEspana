@@ -6,27 +6,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9;}
-    #controls { padding:10px; background:#e7e7e7; display:flex; flex-wrap:wrap; align-items:center; gap:14px; }
-    label { margin-right:6px; }
-    #map { height: 48vh; width: 100%; }
-    #listado { max-height: 45vh; overflow:auto; padding:10px; background:#fff; }
-    .gasolinera { border-bottom:1px solid #eee; padding:8px 0;}
-    .gasolinera:last-child { border-bottom:0;}
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f5f7fa;
+      color: #222;
+      margin: 0;
+    }
+    #controls {
+      background: #004aad;
+      color: #fff;
+      padding: 18px 10px 12px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      border-bottom: 4px solid #006ce4;
+    }
+    label, select, input, button {
+      font-size: 1.07em;
+    }
+    label { margin-right: 10px; }
+    input[type="range"] { vertical-align: middle; }
+    input[type="text"], select {
+      padding: 5px 8px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background: #fff;
+      color: #004aad;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:active {
+      background: #e4eaff;
+    }
+    #map {
+      height: 51vh;
+      width: 100%;
+      margin-bottom: 2px;
+      box-shadow: 0 2px 16px #0002;
+    }
+    #listado {
+      background: #fff;
+      max-height: 45vh;
+      overflow: auto;
+      padding: 14px;
+      margin: 0;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 18px #0001;
+    }
+    .gasolinera {
+      border-bottom: 1px solid #dde;
+      padding: 14px 0 8px 0;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .gasolinera:last-child { border-bottom: 0;}
+    .gasolinera:hover { background: #efe;}
     .gasolinera span { min-width:46px;}
-    .btnRuta { color: #0074d9; text-decoration: underline; cursor:pointer; }
-    input[type="text"], select{
-      font-size:1em; padding:2px 4px; border:1px solid #bbb; border-radius:4px;
+    .precio {
+      display: inline-block;
+      background: #004aad;
+      color: #fff;
+      border-radius: 4px;
+      font-weight: 700;
+      padding: 4px 9px;
+      margin-left: 8px;
     }
-    input[type="range"] {
-      vertical-align:middle;
+    .marca {
+      font-size: 1em;
+      font-weight: 600;
+      color: #0253bd;
     }
-    button { padding:4px 10px; font-size:0.98em; border:1px solid #888; border-radius:4px; background:#fff; cursor:pointer;}
-    button:active {background: #ededed;}
+    .btnRuta { color: #006ce4; text-decoration: underline; cursor:pointer; }
+    .seleccionada { background: #dfffc0 !important;}
     @media (max-width:600px) {
       #controls {flex-direction:column; align-items:flex-start;}
-      #map { height: 40vh;}
-      #listado {max-height: 53vh;}
+      #map { height: 41vh;}
+      #listado {max-height: 55vh;}
       html, body {font-size: 15px;}
     }
   </style>
@@ -55,7 +116,7 @@
   </div>
   <div id="map"></div>
   <div id="listado"></div>
-  
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
   // Utilidad Haversine
@@ -68,12 +129,10 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  // Estado app
   let myLat = null, myLon = null;
   let gasolineras = [];
-  let mapa = null, capaMarkers = null;
+  let mapa = null, capaMarkers = null, referenciaMarcadores = [];
 
-  // DOM refer
   const btnLocalizar = document.getElementById('btnLocalizar');
   const btnBuscarDireccion = document.getElementById('btnBuscarDireccion');
   const direccionInput = document.getElementById('direccion');
@@ -82,9 +141,8 @@
   const combustibleSel = document.getElementById('combustible');
   const listadoDiv = document.getElementById('listado');
 
-  // Inicializar mapa
   function inicializarMapa() {
-    mapa = L.map('map').setView([40.4167,-3.70325], 6); // España
+    mapa = L.map('map').setView([40.4167,-3.70325], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
     }).addTo(mapa);
@@ -92,18 +150,15 @@
   }
   inicializarMapa();
 
-  // Radio handler
   radioKmInput.addEventListener('input', ()=>{
     valorKmSpan.textContent = radioKmInput.value;
     if(myLat && myLon) mostrarGasolineras();
   });
 
-  // Combustible handler
   combustibleSel.addEventListener('change', ()=>{
     if(myLat && myLon) mostrarGasolineras();
   });
 
-  // Buscar dirección
   btnBuscarDireccion.addEventListener('click', buscarDireccion);
 
   function buscarDireccion() {
@@ -126,7 +181,6 @@
     });
   }
 
-  // Geolocalización
   btnLocalizar.addEventListener('click', ()=>{
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos=>{
@@ -140,7 +194,6 @@
     }
   });
 
-  // Carga gasolineras
   async function cargarGasolineras(){
     listadoDiv.innerHTML = "Cargando datos oficiales de gasolineras...";
     const res = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/');
@@ -160,22 +213,21 @@
         'Precio Biodiesel': parseFloat((gaso["Precio Biodiesel"]||"0").replace(",",".")||0),
         'Precio Bioetanol': parseFloat((gaso["Precio Bioetanol"]||"0").replace(",",".")||0),
       }
-    }))
+    }));
     listadoDiv.innerHTML = "Introduce tu ubicación o busca una dirección para empezar.";
   }
   cargarGasolineras();
 
-  // Mostrar gasolineras cercanas y mapa
   function mostrarGasolineras() {
     listadoDiv.innerHTML = "Buscando gasolineras cercanas...";
     capaMarkers.clearLayers();
+    referenciaMarcadores = [];
     if(myLat==null || myLon==null || gasolineras.length==0) {
       listadoDiv.innerHTML = "Introduce ubicación.";
       return;
     }
     const radio = parseInt(radioKmInput.value);
     const tipo = combustibleSel.value;
-    // Filtra y ordena las gasolineras
     let cercanas = gasolineras
       .map(gaso => {
         const dist = haversine(myLat, myLon, gaso.lat, gaso.lon);
@@ -189,31 +241,72 @@
       listadoDiv.innerHTML = `<p>No hay gasolineras en ${radio} km con precios de este carburante.</p>`;
       return;
     }
-    // Centro mapa en usuario
     mapa.setView([myLat, myLon], radio <= 3 ? 15 : radio <=10 ? 12 : 10);
 
-    // Marcador usuario
-    L.marker([myLat, myLon], {title:"Tú", icon: L.icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png", iconSize:[32,32]})}).addTo(capaMarkers);
+    // Añade marcador del usuario
+    L.marker([myLat, myLon], {
+      title:"Tú",
+      icon: L.icon({
+        iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png",
+        iconSize:[32,32]
+      })
+    }).addTo(capaMarkers);
 
-    // Marcadores gasolineras
-    cercanas.forEach(gaso => {
-      const marker = L.marker([gaso.lat, gaso.lon], {title:gaso.nombre});
-      marker.bindPopup(`<b>${gaso.nombre}</b><br>${gaso.direccion}, ${gaso.municipio}<br>Precio: <b>${gaso.precio.toFixed(3)}</b> €/l 
-        <br><a href="https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}" target="_blank">Ruta 🚗</a>`);
-      marker.on('click', ()=> window.open(`https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}`,"_blank"));
+    // Marcadores gasolineras con marca/precio y referencia para resaltar
+    cercanas.forEach((gaso, idx) => {
+      const iconHtml = `
+        <div style="background:#fff; border:2px solid #004aad; border-radius:6px; padding:5px 10px; box-shadow:0 1px 6px #156fff33; min-width:70px; text-align:center;">
+          <span style="font-weight:600;font-size:1em;color:#004aad;line-height:1.1;">${gaso.nombre}</span>
+          <div class="precio" style="margin:2px auto 0px auto;display:inline-block;">${gaso.precio.toFixed(3)} €/l</div>
+        </div>
+      `;
+      const icon = L.divIcon({className: '', html: iconHtml, iconAnchor:[35,50]});
+      const marker = L.marker([gaso.lat, gaso.lon], {icon, title: gaso.nombre});
+      marker.bindPopup(`
+        <b>${gaso.nombre}</b><br>${gaso.direccion}, ${gaso.municipio}<br>
+        <span class="precio">${gaso.precio.toFixed(3)} €/l</span>
+        <br><a href="https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}" target="_blank">Ruta 🚗</a>
+      `);
+      marker._listIdx = idx;
+      marker.on('click', function() {
+        resaltaEnListado(idx, true);
+      });
       marker.addTo(capaMarkers);
+      referenciaMarcadores.push(marker);
     });
 
-    // Lista
-    listadoDiv.innerHTML = cercanas.slice(0,40).map(gaso=>`
-      <div class="gasolinera">
-        <b>${gaso.nombre}</b>
+    listadoDiv.innerHTML = cercanas.slice(0,40).map((gaso, i)=>`
+      <div class="gasolinera" data-idx="${i}">
+        <span class="marca">${gaso.nombre}</span>
+        <span class="precio">${gaso.precio.toFixed(3)} €/l</span>
         <br><span>${gaso.direccion}, ${gaso.municipio} (${gaso.provincia})</span>
-        <br>Precio: <b>${gaso.precio.toFixed(3)}</b> €/l | <span>${gaso.dist.toFixed(1)} km</span>
-        <br><span class="btnRuta" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}','_blank')">Ir 🚗</span>
+        <br><span style="color:#888;">${gaso.dist.toFixed(1)} km</span>
+        <br><span class="btnRuta" onclick="event.stopPropagation();window.open('https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}','_blank')">Ir 🚗</span>
       </div>
     `).join('');
 
+    // Sincronizar clicks en listado con el mapa
+    Array.from(listadoDiv.querySelectorAll('.gasolinera')).forEach((elem, idx) => {
+      elem.onclick = function(){
+        centrarYPopup(cercanas[idx].lat, cercanas[idx].lon, idx);
+        resaltaEnListado(idx, false);
+      };
+    });
+  }
+
+  function centrarYPopup(lat, lon, idx) {
+    mapa.setView([lat,lon], 15);
+    const marker = referenciaMarcadores[idx];
+    if(marker) marker.openPopup();
+  }
+  function resaltaEnListado(idx, desdeMapa) {
+    Array.from(listadoDiv.querySelectorAll('.gasolinera')).forEach(i => i.classList.remove('seleccionada'));
+    const lista = listadoDiv.querySelectorAll('.gasolinera');
+    if(lista[idx]){
+      lista[idx].classList.add('seleccionada');
+      lista[idx].scrollIntoView({behavior:"smooth", block:"center"});
+      if(desdeMapa) setTimeout(()=>lista[idx].classList.remove('seleccionada'), 2400);
+    }
   }
   </script>
 </body>

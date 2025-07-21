@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gasolineras España - Encuentra combustible barato</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-gas-pump"></i> Gasolineras España</h1>
+            <div class="fuel-selector">
+                <label for="fuelType" class="form-label">Tipo de combustible:</label>
+                <select id="fuelType" class="form-control">
+                    <option value="Precio Gasolina 95 E5">Gasolina 95</option>
+                    <option value="Precio Gasolina 98 E5">Gasolina 98</option>
+                    <option value="Precio Gasoleo A">Diésel</option>
+                    <option value="Precio Gasoleo Premium">Diésel Premium</option>
+                    <option value="Precio Biodiesel">Biodiésel</option>
+                    <option value="Precio Bioetanol">Bioetanol</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Location Section -->
+        <section class="location-section">
+            <div class="location-controls">
+                <button id="getLocationBtn" class="btn btn--primary">
+                    <i class="fas fa-location-arrow"></i>
+                    Mi ubicación
+                </button>
+                <div class="address-input">
+                    <input type="text" id="addressInput" class="form-control" 
+                           placeholder="O introduce tu dirección..." value="">
+                    <button id="searchAddressBtn" class="btn btn--secondary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="locationStatus" class="location-status"></div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loading" class="loading hidden">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Buscando gasolineras...</span>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <!-- View Toggle - Visible by default -->
+        <div class="view-controls">
+            <div class="view-toggle">
+                <button id="showListBtn" class="btn btn--sm btn--secondary active">
+                    <i class="fas fa-list"></i> Lista
+                </button>
+                <button id="showMapBtn" class="btn btn--sm btn--secondary">
+                    <i class="fas fa-map"></i> Mapa
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Stations List -->
+            <section id="stationsSection" class="stations-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Gasolineras cercanas</h2>
+                </div>
+                
+                <div id="stationsContainer" class="stations-container">
+                    <div class="no-stations">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Permite la geolocalización o introduce tu dirección para encontrar gasolineras cercanas</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Map Section -->
+            <section id="mapSection" class="map-section hidden">
+                <div class="section-header">
+                    <h2><i class="fas fa-map"></i> Mapa de gasolineras</h2>
+                </div>
+                <div id="map" class="map-container"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

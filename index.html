@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gasolineras España - Busca el mejor precio</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header moderno -->
+        <header class="header">
+            <div class="header-content container">
+                <div class="header-top">
+                    <h1 class="header-title">⛽ Gasolineras</h1>
+                    <span class="header-subtitle">Encuentra el mejor precio cerca de ti</span>
+                </div>
+                
+                <!-- Selector de combustible en chips -->
+                <div class="combustible-selector">
+                    <button class="fuel-chip active" data-fuel="Precio Gasoleo A">
+                        <span class="fuel-icon">⛽</span>
+                        <span class="fuel-name">Diésel</span>
+                    </button>
+                    <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">
+                        <span class="fuel-icon">🚗</span>
+                        <span class="fuel-name">95</span>
+                    </button>
+                    <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">
+                        <span class="fuel-icon">🏎️</span>
+                        <span class="fuel-name">98</span>
+                    </button>
+                    <button class="fuel-chip" data-fuel="Precio Gasoleo Premium">
+                        <span class="fuel-icon">💎</span>
+                        <span class="fuel-name">Diésel+</span>
+                    </button>
+                    <button class="fuel-chip" data-fuel="Precio Biodiesel">
+                        <span class="fuel-icon">🌱</span>
+                        <span class="fuel-name">Bio</span>
+                    </button>
+                    <button class="fuel-chip" data-fuel="Precio Bioetanol">
+                        <span class="fuel-icon">🌿</span>
+                        <span class="fuel-name">E85</span>
+                    </button>
+                </div>
+
+                <!-- Búsqueda de dirección -->
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="direccionInput" class="search-input" 
+                               placeholder="Buscar por dirección o ciudad...">
+                        <button id="buscarBtn" class="search-btn">Buscar</button>
+                    </div>
+                </div>
+
+                <!-- Control de radio -->
+                <div class="radius-control">
+                    <label class="radius-label">Radio de búsqueda: <span id="radioValue">5</span> km</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="radioSlider" class="radius-slider" 
+                               min="1" max="80" value="5" step="1">
+                        <div class="slider-track"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <!-- Estado de carga -->
+            <div id="loadingState" class="loading-state hidden">
+                <div class="loading-spinner"></div>
+                <p id="loadingText">Cargando gasolineras...</p>
+            </div>
+
+            <!-- Mapa con marcadores mejorados -->
+            <div class="map-container">
+                <div id="mapa" class="map"></div>
+                <div class="map-info">
+                    <span id="mapInfo" class="map-info-text">📍 Obtén tu ubicación para ver gasolineras cercanas</span>
+                </div>
+            </div>
+
+            <!-- Separación entre mapa y listado -->
+            <div class="content-separator"></div>
+
+            <!-- Listado de gasolineras -->
+            <div class="stations-section container">
+                <div class="stations-header">
+                    <h2 class="stations-title">Estaciones encontradas</h2>
+                    <span id="stationsCount" class="stations-count">0 estaciones</span>
+                </div>
+                
+                <div id="listaGasolineras" class="stations-list">
+                    <div class="no-results">
+                        <div class="no-results-icon">📍</div>
+                        <p>No hay gasolineras encontradas</p>
+                        <span class="no-results-subtitle">Usa tu ubicación o busca una dirección</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- FAB para geolocalización -->
+        <button id="ubicacionBtn" class="fab" title="Usar mi ubicación">
+            <span class="fab-icon">📍</span>
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

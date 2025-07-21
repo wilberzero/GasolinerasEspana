@@ -50,7 +50,7 @@
             opacity: 0.9;
         }
 
-        /* Selector de combustible mejorado con texto */
+        /* Selector de combustible en chips */
         .combustible-selector {
             display: flex;
             gap: 8px;
@@ -68,37 +68,30 @@
             background: rgba(255,255,255,0.2);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 10px 16px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             min-height: 44px;
-            font-weight: 500;
         }
 
         .fuel-chip:hover {
             background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
         }
 
         .fuel-chip.active {
             background: rgba(255,255,255,0.95);
             color: #1a56db;
             border-color: rgba(255,255,255,0.8);
-            font-weight: 600;
         }
 
         .fuel-icon {
-            font-size: 1.1rem;
-        }
-
-        .fuel-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         /* Controles de búsqueda */
@@ -420,27 +413,38 @@
                 height: 48px;
                 font-size: 1.25rem;
             }
-
-            .fuel-chip {
-                padding: 8px 12px;
-                font-size: 0.85rem;
-            }
-
-            .fuel-name {
-                font-size: 0.85rem;
-            }
         }
 
-        /* Ayuda contextual para selectores */
-        .selector-help {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            margin-top: 8px;
-            text-align: center;
-            opacity: 0.9;
+        /* Estilo para los marcadores con texto */
+        .mapa-marker {
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
         }
+        .mapa-marker .marker-text-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mapa-marker .marker-circle {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-top: 2px;
+        }
+        .mapa-marker .marker-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            color: #1e293b;
+            background: rgba(255,255,255,0.85);
+            padding: 3px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .mapa-marker .marker-circle.barato { background: #10b981; }
+        .mapa-marker .marker-circle.medio { background: #f59e0b; }
+        .mapa-marker .marker-circle.caro { background: #ef4444; }
     </style>
 </head>
 <body>
@@ -452,37 +456,32 @@
                 <span class="header-subtitle">Encuentra el mejor precio cerca de ti</span>
             </div>
             
-            <!-- Selector de combustible con texto descriptivo -->
+            <!-- Selector de combustible en chips -->
             <div class="combustible-selector">
-                <button class="fuel-chip active" data-fuel="Precio Gasoleo A">
+                <button class="fuel-chip" data-fuel="Precio Gasoleo A">
                     <span class="fuel-icon">⛽</span>
                     <span class="fuel-name">Diésel</span>
                 </button>
                 <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">
                     <span class="fuel-icon">🚗</span>
-                    <span class="fuel-name">Gasolina 95</span>
+                    <span class="fuel-name">95</span>
                 </button>
                 <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">
                     <span class="fuel-icon">🏎️</span>
-                    <span class="fuel-name">Gasolina 98</span>
+                    <span class="fuel-name">98</span>
                 </button>
                 <button class="fuel-chip" data-fuel="Precio Gasoleo Premium">
                     <span class="fuel-icon">💎</span>
-                    <span class="fuel-name">Diésel Premium</span>
+                    <span class="fuel-name">Diésel+</span>
                 </button>
                 <button class="fuel-chip" data-fuel="Precio Biodiesel">
                     <span class="fuel-icon">🌱</span>
-                    <span class="fuel-name">Biodiésel</span>
+                    <span class="fuel-name">Bio</span>
                 </button>
                 <button class="fuel-chip" data-fuel="Precio Bioetanol">
                     <span class="fuel-icon">🌿</span>
-                    <span class="fuel-name">Bioetanol</span>
+                    <span class="fuel-name">E85</span>
                 </button>
-            </div>
-            
-            <!-- Ayuda contextual -->
-            <div class="selector-help">
-                👆 Selecciona el tipo de combustible que necesitas
             </div>
         </header>
 
@@ -506,7 +505,7 @@
         <!-- Mapa -->
         <div class="mapa-container">
             <div id="mapaInfo" class="mapa-info">
-                📍 Selecciona una ubicación para ver gasolineras
+                📍 Obteniendo tu ubicación...
             </div>
             <div id="mapa"></div>
         </div>
@@ -519,7 +518,8 @@
             </div>
             <div id="listado" class="listado">
                 <div class="loading">
-                    <div>Introduce tu ubicación para ver las gasolineras más baratas</div>
+                    <div class="loading-spinner"></div>
+                    Iniciando aplicación...
                 </div>
             </div>
         </div>
@@ -532,7 +532,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Aplicación de Gasolineras España - Versión mejorada
+        // Aplicación de Gasolineras España - Versión con persistencia mejorada
         class GasolinerasApp {
             constructor() {
                 this.mapa = null;
@@ -542,6 +542,7 @@
                 this.combustibleSeleccionado = 'Precio Gasoleo A';
                 this.radioKm = 5;
                 this.gasolineraSeleccionada = null;
+                this.inicioAutomatico = true; // Flag para inicio automático
 
                 // Configuración de colores para marcadores
                 this.colores = {
@@ -550,29 +551,124 @@
                     caro: '#ef4444'
                 };
 
+                // Claves para localStorage
+                this.STORAGE_KEYS = {
+                    combustible: 'gasolineras_combustible_preferido',
+                    ubicacion: 'gasolineras_ultima_ubicacion',
+                    radio: 'gasolineras_radio_preferido'
+                };
+
                 this.init();
             }
 
             init() {
                 this.initMapa();
+                this.cargarPreferenciasGuardadas();
                 this.initEventListeners();
-                this.updateMapInfo('📍 Selecciona una ubicación para ver gasolineras');
+                
+                // Inicio automático con GPS o última ubicación
+                this.iniciarAutomaticamente();
+            }
+
+            // Nueva función: cargar preferencias del localStorage
+            cargarPreferenciasGuardadas() {
+                // Cargar combustible preferido
+                const combustibleGuardado = localStorage.getItem(this.STORAGE_KEYS.combustible);
+                if (combustibleGuardado) {
+                    this.combustibleSeleccionado = combustibleGuardado;
+                    this.actualizarSelectorCombustible();
+                }
+
+                // Cargar radio preferido
+                const radioGuardado = localStorage.getItem(this.STORAGE_KEYS.radio);
+                if (radioGuardado) {
+                    this.radioKm = parseInt(radioGuardado);
+                    document.getElementById('radioSlider').value = this.radioKm;
+                    document.getElementById('radioValue').textContent = `${this.radioKm} km`;
+                }
+            }
+
+            // Nueva función: actualizar selector de combustible visualmente
+            actualizarSelectorCombustible() {
+                document.querySelectorAll('.fuel-chip').forEach(chip => {
+                    chip.classList.remove('active');
+                    if (chip.dataset.fuel === this.combustibleSeleccionado) {
+                        chip.classList.add('active');
+                    }
+                });
+            }
+
+            // Nueva función: guardar preferencias en localStorage
+            guardarPreferencias() {
+                localStorage.setItem(this.STORAGE_KEYS.combustible, this.combustibleSeleccionado);
+                localStorage.setItem(this.STORAGE_KEYS.radio, this.radioKm.toString());
+                
+                if (this.ubicacionActual) {
+                    localStorage.setItem(this.STORAGE_KEYS.ubicacion, JSON.stringify(this.ubicacionActual));
+                }
+            }
+
+            // Nueva función: iniciar automáticamente con GPS o última ubicación
+            async iniciarAutomaticamente() {
+                this.updateMapInfo('🔍 Iniciando aplicación...');
+                
+                // Intentar GPS primero
+                if (navigator.geolocation) {
+                    try {
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                enableHighAccuracy: true,
+                                timeout: 8000,
+                                maximumAge: 300000
+                            });
+                        });
+
+                        const { latitude, longitude } = position.coords;
+                        this.ubicacionActual = { lat: latitude, lng: longitude };
+                        this.mapa.setView([latitude, longitude], 16);
+                        this.updateMapInfo('📍 Ubicación GPS obtenida');
+                        await this.cargarGasolineras();
+                        return; // GPS exitoso, salir
+
+                    } catch (error) {
+                        console.log('GPS no disponible, intentando con última ubicación...');
+                    }
+                }
+
+                // Si GPS falla, usar última ubicación guardada
+                const ubicacionGuardada = localStorage.getItem(this.STORAGE_KEYS.ubicacion);
+                if (ubicacionGuardada) {
+                    try {
+                        this.ubicacionActual = JSON.parse(ubicacionGuardada);
+                        this.mapa.setView([this.ubicacionActual.lat, this.ubicacionActual.lng], 16);
+                        this.updateMapInfo('📍 Usando última ubicación guardada');
+                        await this.cargarGasolineras();
+                        return; // Última ubicación exitosa
+                    } catch (error) {
+                        console.error('Error cargando ubicación guardada:', error);
+                    }
+                }
+
+                // Si todo falla, mostrar mensaje para que el usuario busque
+                this.updateMapInfo('📍 Pulsa el botón GPS o busca una dirección para empezar');
+                document.getElementById('listado').innerHTML = `
+                    <div class="loading">
+                        <div>Pulsa 📍 para obtener tu ubicación actual<br>o busca una dirección manualmente</div>
+                    </div>
+                `;
             }
 
             initMapa() {
-                // Inicializar mapa centrado en España
                 this.mapa = L.map('mapa', {
-                    center: [40.4168, -3.7038], // Madrid
+                    center: [40.4168, -3.7038],
                     zoom: 6,
                     zoomControl: true
                 });
 
-                // Añadir capa de OpenStreetMap
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(this.mapa);
 
-                // Configurar controles del mapa
                 this.mapa.zoomControl.setPosition('bottomleft');
             }
 
@@ -583,6 +679,10 @@
                         document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
                         e.currentTarget.classList.add('active');
                         this.combustibleSeleccionado = e.currentTarget.dataset.fuel;
+                        
+                        // Guardar preferencia inmediatamente
+                        this.guardarPreferencias();
+                        
                         if (this.gasolineras.length > 0) {
                             this.procesarGasolineras(this.gasolineras);
                         }
@@ -612,6 +712,10 @@
                 slider.addEventListener('input', (e) => {
                     this.radioKm = parseInt(e.target.value);
                     valueLabel.textContent = `${this.radioKm} km`;
+                    
+                    // Guardar preferencia inmediatamente
+                    this.guardarPreferencias();
+                    
                     if (this.gasolineras.length > 0) {
                         this.procesarGasolineras(this.gasolineras);
                     }
@@ -642,9 +746,10 @@
 
                     const { latitude, longitude } = position.coords;
                     this.ubicacionActual = { lat: latitude, lng: longitude };
-                    
-                    // Zoom cercano al obtener ubicación
                     this.mapa.setView([latitude, longitude], 16);
+                    
+                    // Guardar ubicación inmediatamente
+                    this.guardarPreferencias();
                     
                     await this.cargarGasolineras();
                     this.resetFabButton();
@@ -681,8 +786,10 @@
                         lng: parseFloat(result.lon)
                     };
 
-                    // Zoom cercano al buscar dirección
                     this.mapa.setView([this.ubicacionActual.lat, this.ubicacionActual.lng], 16);
+                    
+                    // Guardar ubicación inmediatamente
+                    this.guardarPreferencias();
                     
                     await this.cargarGasolineras();
                     
@@ -728,16 +835,14 @@
             procesarGasolineras(gasolinerasRaw) {
                 if (!this.ubicacionActual) return;
 
-                // Limpiar marcadores anteriores
                 this.marcadores.forEach(marker => this.mapa.removeLayer(marker));
                 this.marcadores = [];
 
-                // Procesar y filtrar gasolineras
                 const gasolinerasProcesadas = gasolinerasRaw
                     .map(g => this.procesarGasolinera(g))
                     .filter(g => g !== null)
                     .filter(g => g.distancia <= this.radioKm)
-                    .sort((a, b) => a.precio - b.precio); // Ordenar por precio (menor a mayor)
+                    .sort((a, b) => a.precio - b.precio);
 
                 if (gasolinerasProcesadas.length === 0) {
                     this.updateMapInfo(`❌ No hay gasolineras en ${this.radioKm}km con precios de ${this.getNombreCombustible()}`);
@@ -750,13 +855,8 @@
                     return;
                 }
 
-                // Crear marcadores en el mapa
                 this.crearMarcadores(gasolinerasProcesadas);
-                
-                // Actualizar listado
                 this.actualizarListado(gasolinerasProcesadas);
-                
-                // Añadir marcador de ubicación del usuario
                 this.marcarUbicacionUsuario();
 
                 this.updateMapInfo(`✅ ${gasolinerasProcesadas.length} gasolineras encontradas`);
@@ -795,7 +895,6 @@
             }
 
             crearMarcadores(gasolineras) {
-                // Calcular rangos de precios para colorear
                 const precios = gasolineras.map(g => g.precio);
                 const precioMin = Math.min(...precios);
                 const precioMax = Math.max(...precios);
@@ -809,34 +908,44 @@
                         categoria = 'medio';
                     }
 
-                    const marcador = L.circleMarker([gasolinera.lat, gasolinera.lng], {
-                        radius: 4,
-                        fillColor: this.colores[categoria],
-                        color: 'white',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.9
+                    // Nombre corto del combustible
+                    const abrev = {
+                        'Precio Gasoleo A': 'Diésel',
+                        'Precio Gasolina 95 E5': '95',
+                        'Precio Gasolina 98 E5': '98',
+                        'Precio Gasoleo Premium': 'Diésel+',
+                        'Precio Biodiesel': 'Bio',
+                        'Precio Bioetanol': 'E85'
+                    }[this.combustibleSeleccionado];
+
+                    // Icono personalizado con precio + combustible, siempre visible
+                    const icono = L.divIcon({
+                        className: `mapa-marker ${categoria}`,
+                        html: `<div class="marker-text-container">
+                                  <div class="marker-circle ${categoria}"></div>
+                                  <div class="marker-text">${gasolinera.precio.toFixed(3)}€ ${abrev}</div>
+                               </div>`,
+                        iconSize: [80, 30],
+                        iconAnchor: [40, 15]
                     });
 
-                    marcador.bindPopup(`
-                        <div style="text-align: center; min-width: 120px;">
+                    const marker = L.marker([gasolinera.lat, gasolinera.lng], {
+                        icon: icono
+                    });
+
+                    marker.bindPopup(`
+                        <div style="text-align:center; min-width:120px;">
                             <strong>${gasolinera.nombre}</strong><br>
-                            <span style="color: ${this.colores[categoria]}; font-size: 1.1em; font-weight: bold;">
-                                ${gasolinera.precio.toFixed(3)} €/L
+                            <span style="color: ${this.colores[categoria]}; font-weight:bold;">
+                                ${gasolinera.precio.toFixed(3)} €/L ${abrev}
                             </span><br>
                             <small>${gasolinera.distancia.toFixed(1)} km</small>
                         </div>
                     `);
 
-                    marcador.on('click', () => {
-                        this.seleccionarGasolinera(index);
-                    });
-
-                    marcador.addTo(this.mapa);
-                    this.marcadores.push(marcador);
-                    
-                    // Guardar referencia para sincronización
-                    marcador._gasolineraIndex = index;
+                    marker.on('click', () => this.seleccionarGasolinera(index));
+                    marker.addTo(this.mapa);
+                    this.marcadores.push(marker);
                 });
             }
 
@@ -852,7 +961,6 @@
                     return;
                 }
 
-                // Calcular categorías de precios
                 const precios = gasolineras.map(g => g.precio);
                 const precioMin = Math.min(...precios);
                 const precioMax = Math.max(...precios);
@@ -891,7 +999,6 @@
 
                 listado.innerHTML = html;
 
-                // Añadir eventos de clic a las tarjetas
                 listado.querySelectorAll('.gasolinera-card').forEach(card => {
                     card.addEventListener('click', (e) => {
                         if (e.target.classList.contains('ruta-btn')) return;
@@ -902,19 +1009,16 @@
             }
 
             seleccionarGasolinera(index) {
-                // Limpiar selección anterior
                 document.querySelectorAll('.gasolinera-card').forEach(card => {
                     card.classList.remove('selected');
                 });
 
-                // Seleccionar nueva gasolinera
                 const card = document.querySelector(`[data-index="${index}"]`);
                 if (card) {
                     card.classList.add('selected');
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
 
-                // Abrir popup del marcador correspondiente
                 if (this.marcadores[index]) {
                     this.marcadores[index].openPopup();
                 }
@@ -945,7 +1049,7 @@
             }
 
             calcularDistancia(lat1, lon1, lat2, lon2) {
-                const R = 6371; // Radio de la Tierra en km
+                const R = 6371;
                 const dLat = this.toRad(lat2 - lat1);
                 const dLon = this.toRad(lon2 - lon1);
                 const a = Math.sin(dLat/2) * Math.sin(dLat/2) +

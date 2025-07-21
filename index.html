@@ -1,313 +1,1001 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Buscador de Gasolineras</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f5f7fa;
-      color: #222;
-      margin: 0;
-    }
-    #controls {
-      background: #004aad;
-      color: #fff;
-      padding: 18px 10px 12px 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      align-items: center;
-      border-bottom: 4px solid #006ce4;
-    }
-    label, select, input, button {
-      font-size: 1.07em;
-    }
-    label { margin-right: 10px; }
-    input[type="range"] { vertical-align: middle; }
-    input[type="text"], select {
-      padding: 5px 8px;
-      border-radius: 5px;
-      border: none;
-    }
-    button {
-      background: #fff;
-      color: #004aad;
-      border: none;
-      border-radius: 4px;
-      padding: 6px 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:active {
-      background: #e4eaff;
-    }
-    #map {
-      height: 51vh;
-      width: 100%;
-      margin-bottom: 2px;
-      box-shadow: 0 2px 16px #0002;
-    }
-    #listado {
-      background: #fff;
-      max-height: 45vh;
-      overflow: auto;
-      padding: 14px;
-      margin: 0;
-      border-radius: 0 0 12px 12px;
-      box-shadow: 0 4px 18px #0001;
-    }
-    .gasolinera {
-      border-bottom: 1px solid #dde;
-      padding: 14px 0 8px 0;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .gasolinera:last-child { border-bottom: 0;}
-    .gasolinera:hover { background: #efe;}
-    .gasolinera span { min-width:46px;}
-    .precio {
-      display: inline-block;
-      background: #004aad;
-      color: #fff;
-      border-radius: 4px;
-      font-weight: 700;
-      padding: 4px 9px;
-      margin-left: 8px;
-    }
-    .marca {
-      font-size: 1em;
-      font-weight: 600;
-      color: #0253bd;
-    }
-    .btnRuta { color: #006ce4; text-decoration: underline; cursor:pointer; }
-    .seleccionada { background: #dfffc0 !important;}
-    @media (max-width:600px) {
-      #controls {flex-direction:column; align-items:flex-start;}
-      #map { height: 41vh;}
-      #listado {max-height: 55vh;}
-      html, body {font-size: 15px;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gasolineras España - Busca el mejor precio</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header moderno */
+        .header {
+            background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
+            color: white;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .header-top {
+            margin-bottom: 16px;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* Selector de combustible mejorado con texto */
+        .combustible-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .combustible-selector::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fuel-chip {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            font-weight: 500;
+        }
+
+        .fuel-chip:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .fuel-chip.active {
+            background: rgba(255,255,255,0.95);
+            color: #1a56db;
+            border-color: rgba(255,255,255,0.8);
+            font-weight: 600;
+        }
+
+        .fuel-icon {
+            font-size: 1.1rem;
+        }
+
+        .fuel-name {
+            font-size: 0.9rem;
+        }
+
+        /* Controles de búsqueda */
+        .search-controls {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .search-field {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1a56db;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1a56db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #1e40af;
+        }
+
+        /* Slider de radio */
+        .radio-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .radio-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .radio-slider {
+            flex: 1;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            outline: none;
+            appearance: none;
+        }
+
+        .radio-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #1a56db;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .radio-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #1a56db;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .radio-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a56db;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Mapa */
+        .mapa-container {
+            position: relative;
+            height: 45vh;
+            margin: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #mapa {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Info del mapa */
+        .mapa-info {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            background: rgba(255,255,255,0.95);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #64748b;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #1a56db;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26,86,219,0.4);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(26,86,219,0.5);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Listado de gasolineras */
+        .listado-container {
+            flex: 1;
+            background: white;
+            margin: 0 16px 16px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .listado-header {
+            background: #f8fafc;
+            padding: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .listado-titulo {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a56db;
+        }
+
+        .listado-info {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .listado {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .gasolinera-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gasolinera-card:hover {
+            border-color: #1a56db;
+            box-shadow: 0 2px 8px rgba(26,86,219,0.1);
+        }
+
+        .gasolinera-card.selected {
+            border-color: #1a56db;
+            background: #f0f7ff;
+        }
+
+        .gasolinera-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .gasolinera-nombre {
+            font-weight: 600;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .precio-badge {
+            background: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .precio-badge.medio {
+            background: #f59e0b;
+        }
+
+        .precio-badge.caro {
+            background: #ef4444;
+        }
+
+        .gasolinera-info {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .gasolinera-acciones {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gasolinera-distancia {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .ruta-btn {
+            background: #1a56db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ruta-btn:hover {
+            background: #1e40af;
+        }
+
+        /* Estado de carga */
+        .loading {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            border-top-color: #1a56db;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mapa-container {
+                height: 40vh;
+                margin: 12px;
+            }
+            
+            .listado {
+                max-height: 45vh;
+            }
+            
+            .fab {
+                bottom: 16px;
+                right: 16px;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+
+            .fuel-chip {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .fuel-name {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Ayuda contextual para selectores */
+        .selector-help {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            text-align: center;
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
-  <div id="controls">
-    <label>Combustible:
-      <select id="combustible">
-        <option value="Precio Gasoleo A">Diésel</option>
-        <option value="Precio Gasolina 95 E5">Gasolina 95</option>
-        <option value="Precio Gasolina 98 E5">Gasolina 98</option>
-        <option value="Precio Gasoleo Premium">Diésel Premium</option>
-        <option value="Precio Biodiesel">Biodiésel</option>
-        <option value="Precio Bioetanol">Bioetanol</option>
-      </select>
-    </label>
-    <button id="btnLocalizar">📍 Mi localización</button>
-    <label>O dirección:
-      <input type="text" id="direccion" placeholder="Ej: Madrid o Calle 10, Sevilla"/>
-      <button id="btnBuscarDireccion">Buscar</button>
-    </label>
-    <label>Radio:
-      <span id="valorKm">5</span>km
-      <input type="range" id="radioKm" min="1" max="80" value="5" step="1"/>
-    </label>
-  </div>
-  <div id="map"></div>
-  <div id="listado"></div>
+    <div class="app-container">
+        <!-- Header moderno -->
+        <header class="header">
+            <div class="header-top">
+                <h1 class="header-title">⛽ Gasolineras</h1>
+                <span class="header-subtitle">Encuentra el mejor precio cerca de ti</span>
+            </div>
+            
+            <!-- Selector de combustible con texto descriptivo -->
+            <div class="combustible-selector">
+                <button class="fuel-chip active" data-fuel="Precio Gasoleo A">
+                    <span class="fuel-icon">⛽</span>
+                    <span class="fuel-name">Diésel</span>
+                </button>
+                <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">
+                    <span class="fuel-icon">🚗</span>
+                    <span class="fuel-name">Gasolina 95</span>
+                </button>
+                <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">
+                    <span class="fuel-icon">🏎️</span>
+                    <span class="fuel-name">Gasolina 98</span>
+                </button>
+                <button class="fuel-chip" data-fuel="Precio Gasoleo Premium">
+                    <span class="fuel-icon">💎</span>
+                    <span class="fuel-name">Diésel Premium</span>
+                </button>
+                <button class="fuel-chip" data-fuel="Precio Biodiesel">
+                    <span class="fuel-icon">🌱</span>
+                    <span class="fuel-name">Biodiésel</span>
+                </button>
+                <button class="fuel-chip" data-fuel="Precio Bioetanol">
+                    <span class="fuel-icon">🌿</span>
+                    <span class="fuel-name">Bioetanol</span>
+                </button>
+            </div>
+            
+            <!-- Ayuda contextual -->
+            <div class="selector-help">
+                👆 Selecciona el tipo de combustible que necesitas
+            </div>
+        </header>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-  // Utilidad Haversine
-  function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2-lat1) * Math.PI/180;
-    const dLon = (lon2-lon1) * Math.PI/180;
-    const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
-      Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
-  let myLat = null, myLon = null;
-  let gasolineras = [];
-  let mapa = null, capaMarkers = null, referenciaMarcadores = [];
-
-  const btnLocalizar = document.getElementById('btnLocalizar');
-  const btnBuscarDireccion = document.getElementById('btnBuscarDireccion');
-  const direccionInput = document.getElementById('direccion');
-  const radioKmInput = document.getElementById('radioKm');
-  const valorKmSpan = document.getElementById('valorKm');
-  const combustibleSel = document.getElementById('combustible');
-  const listadoDiv = document.getElementById('listado');
-
-  function inicializarMapa() {
-    mapa = L.map('map').setView([40.4167,-3.70325], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(mapa);
-    capaMarkers = L.layerGroup().addTo(mapa);
-  }
-  inicializarMapa();
-
-  radioKmInput.addEventListener('input', ()=>{
-    valorKmSpan.textContent = radioKmInput.value;
-    if(myLat && myLon) mostrarGasolineras();
-  });
-
-  combustibleSel.addEventListener('change', ()=>{
-    if(myLat && myLon) mostrarGasolineras();
-  });
-
-  btnBuscarDireccion.addEventListener('click', buscarDireccion);
-
-  function buscarDireccion() {
-    const txt = direccionInput.value;
-    if(!txt) {
-      alert("Introduce una dirección o ciudad.");
-      return;
-    }
-    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(txt))
-    .then(r=>r.json())
-    .then(res=>{
-      if(res.length) {
-        myLat = parseFloat(res[0].lat);
-        myLon = parseFloat(res[0].lon);
-        mapa.setView([myLat, myLon], 14);
-        mostrarGasolineras();
-      } else {
-        alert("Dirección no encontrada");
-      }
-    });
-  }
-
-  btnLocalizar.addEventListener('click', ()=>{
-    if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos=>{
-        myLat = pos.coords.latitude;
-        myLon = pos.coords.longitude;
-        mapa.setView([myLat, myLon], 14);
-        mostrarGasolineras();
-      },()=>{
-        alert("No se pudo acceder a tu ubicación");
-      });
-    }
-  });
-
-  async function cargarGasolineras(){
-    listadoDiv.innerHTML = "Cargando datos oficiales de gasolineras...";
-    const res = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/');
-    const data = await res.json();
-    gasolineras = data.ListaEESSPrecio.map(gaso => ({
-      nombre: gaso["Rótulo"],
-      direccion: gaso["Dirección"],
-      municipio: gaso["Municipio"],
-      provincia: gaso["Provincia"],
-      lat: parseFloat(gaso["Latitud"].replace(",", ".")),
-      lon: parseFloat(gaso["Longitud (WGS84)"].replace(",", ".")),
-      precios: {
-        'Precio Gasolina 95 E5': parseFloat((gaso["Precio Gasolina 95 E5"]||"0").replace(",",".")||0),
-        'Precio Gasolina 98 E5': parseFloat((gaso["Precio Gasolina 98 E5"]||"0").replace(",",".")||0),
-        'Precio Gasoleo A': parseFloat((gaso["Precio Gasoleo A"]||"0").replace(",",".")||0),
-        'Precio Gasoleo Premium': parseFloat((gaso["Precio Gasoleo Premium"]||"0").replace(",",".")||0),
-        'Precio Biodiesel': parseFloat((gaso["Precio Biodiesel"]||"0").replace(",",".")||0),
-        'Precio Bioetanol': parseFloat((gaso["Precio Bioetanol"]||"0").replace(",",".")||0),
-      }
-    }));
-    listadoDiv.innerHTML = "Introduce tu ubicación o busca una dirección para empezar.";
-  }
-  cargarGasolineras();
-
-  function mostrarGasolineras() {
-    listadoDiv.innerHTML = "Buscando gasolineras cercanas...";
-    capaMarkers.clearLayers();
-    referenciaMarcadores = [];
-    if(myLat==null || myLon==null || gasolineras.length==0) {
-      listadoDiv.innerHTML = "Introduce ubicación.";
-      return;
-    }
-    const radio = parseInt(radioKmInput.value);
-    const tipo = combustibleSel.value;
-    let cercanas = gasolineras
-      .map(gaso => {
-        const dist = haversine(myLat, myLon, gaso.lat, gaso.lon);
-        const precio = gaso.precios[tipo] && gaso.precios[tipo]>0 ? gaso.precios[tipo] : null;
-        return {...gaso, dist, precio};
-      })
-      .filter(gaso => gaso.precio !== null && gaso.dist <= radio)
-      .sort((a,b) => a.dist - b.dist);
-
-    if(cercanas.length==0) {
-      listadoDiv.innerHTML = `<p>No hay gasolineras en ${radio} km con precios de este carburante.</p>`;
-      return;
-    }
-    mapa.setView([myLat, myLon], radio <= 3 ? 15 : radio <=10 ? 12 : 10);
-
-    // Añade marcador del usuario
-    L.marker([myLat, myLon], {
-      title:"Tú",
-      icon: L.icon({
-        iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png",
-        iconSize:[32,32]
-      })
-    }).addTo(capaMarkers);
-
-    // Marcadores gasolineras con marca/precio y referencia para resaltar
-    cercanas.forEach((gaso, idx) => {
-      const iconHtml = `
-        <div style="background:#fff; border:2px solid #004aad; border-radius:6px; padding:5px 10px; box-shadow:0 1px 6px #156fff33; min-width:70px; text-align:center;">
-          <span style="font-weight:600;font-size:1em;color:#004aad;line-height:1.1;">${gaso.nombre}</span>
-          <div class="precio" style="margin:2px auto 0px auto;display:inline-block;">${gaso.precio.toFixed(3)} €/l</div>
+        <!-- Controles de búsqueda -->
+        <div class="search-controls">
+            <div class="search-field">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="direccionInput" class="search-input" 
+                       placeholder="Buscar dirección o ciudad...">
+                <button id="buscarBtn" class="search-btn">Buscar</button>
+            </div>
+            
+            <div class="radio-control">
+                <label class="radio-label">Radio:</label>
+                <input type="range" id="radioSlider" class="radio-slider" 
+                       min="1" max="80" value="5">
+                <span id="radioValue" class="radio-value">5 km</span>
+            </div>
         </div>
-      `;
-      const icon = L.divIcon({className: '', html: iconHtml, iconAnchor:[35,50]});
-      const marker = L.marker([gaso.lat, gaso.lon], {icon, title: gaso.nombre});
-      marker.bindPopup(`
-        <b>${gaso.nombre}</b><br>${gaso.direccion}, ${gaso.municipio}<br>
-        <span class="precio">${gaso.precio.toFixed(3)} €/l</span>
-        <br><a href="https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}" target="_blank">Ruta 🚗</a>
-      `);
-      marker._listIdx = idx;
-      marker.on('click', function() {
-        resaltaEnListado(idx, true);
-      });
-      marker.addTo(capaMarkers);
-      referenciaMarcadores.push(marker);
-    });
 
-    listadoDiv.innerHTML = cercanas.slice(0,40).map((gaso, i)=>`
-      <div class="gasolinera" data-idx="${i}">
-        <span class="marca">${gaso.nombre}</span>
-        <span class="precio">${gaso.precio.toFixed(3)} €/l</span>
-        <br><span>${gaso.direccion}, ${gaso.municipio} (${gaso.provincia})</span>
-        <br><span style="color:#888;">${gaso.dist.toFixed(1)} km</span>
-        <br><span class="btnRuta" onclick="event.stopPropagation();window.open('https://www.google.com/maps/dir/?api=1&destination=${gaso.lat},${gaso.lon}','_blank')">Ir 🚗</span>
-      </div>
-    `).join('');
+        <!-- Mapa -->
+        <div class="mapa-container">
+            <div id="mapaInfo" class="mapa-info">
+                📍 Selecciona una ubicación para ver gasolineras
+            </div>
+            <div id="mapa"></div>
+        </div>
 
-    // Sincronizar clicks en listado con el mapa
-    Array.from(listadoDiv.querySelectorAll('.gasolinera')).forEach((elem, idx) => {
-      elem.onclick = function(){
-        centrarYPopup(cercanas[idx].lat, cercanas[idx].lon, idx);
-        resaltaEnListado(idx, false);
-      };
-    });
-  }
+        <!-- Listado de gasolineras -->
+        <div class="listado-container">
+            <div class="listado-header">
+                <div class="listado-titulo">🏆 Mejores Precios</div>
+                <div class="listado-info">Ordenado de menor a mayor precio</div>
+            </div>
+            <div id="listado" class="listado">
+                <div class="loading">
+                    <div>Introduce tu ubicación para ver las gasolineras más baratas</div>
+                </div>
+            </div>
+        </div>
 
-  function centrarYPopup(lat, lon, idx) {
-    mapa.setView([lat,lon], 15);
-    const marker = referenciaMarcadores[idx];
-    if(marker) marker.openPopup();
-  }
-  function resaltaEnListado(idx, desdeMapa) {
-    Array.from(listadoDiv.querySelectorAll('.gasolinera')).forEach(i => i.classList.remove('seleccionada'));
-    const lista = listadoDiv.querySelectorAll('.gasolinera');
-    if(lista[idx]){
-      lista[idx].classList.add('seleccionada');
-      lista[idx].scrollIntoView({behavior:"smooth", block:"center"});
-      if(desdeMapa) setTimeout(()=>lista[idx].classList.remove('seleccionada'), 2400);
-    }
-  }
-  </script>
+        <!-- Floating Action Button -->
+        <button id="ubicacionBtn" class="fab" title="Mi ubicación">
+            📍
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Aplicación de Gasolineras España - Versión mejorada
+        class GasolinerasApp {
+            constructor() {
+                this.mapa = null;
+                this.marcadores = [];
+                this.gasolineras = [];
+                this.ubicacionActual = null;
+                this.combustibleSeleccionado = 'Precio Gasoleo A';
+                this.radioKm = 5;
+                this.gasolineraSeleccionada = null;
+
+                // Configuración de colores para marcadores
+                this.colores = {
+                    barato: '#10b981',
+                    medio: '#f59e0b',
+                    caro: '#ef4444'
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.initMapa();
+                this.initEventListeners();
+                this.updateMapInfo('📍 Selecciona una ubicación para ver gasolineras');
+            }
+
+            initMapa() {
+                // Inicializar mapa centrado en España
+                this.mapa = L.map('mapa', {
+                    center: [40.4168, -3.7038], // Madrid
+                    zoom: 6,
+                    zoomControl: true
+                });
+
+                // Añadir capa de OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(this.mapa);
+
+                // Configurar controles del mapa
+                this.mapa.zoomControl.setPosition('bottomleft');
+            }
+
+            initEventListeners() {
+                // Selector de combustible
+                document.querySelectorAll('.fuel-chip').forEach(chip => {
+                    chip.addEventListener('click', (e) => {
+                        document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
+                        e.currentTarget.classList.add('active');
+                        this.combustibleSeleccionado = e.currentTarget.dataset.fuel;
+                        if (this.gasolineras.length > 0) {
+                            this.procesarGasolineras(this.gasolineras);
+                        }
+                    });
+                });
+
+                // Botón de geolocalización (FAB)
+                document.getElementById('ubicacionBtn').addEventListener('click', () => {
+                    this.obtenerUbicacion();
+                });
+
+                // Búsqueda por dirección
+                document.getElementById('buscarBtn').addEventListener('click', () => {
+                    this.buscarDireccion();
+                });
+
+                document.getElementById('direccionInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.buscarDireccion();
+                    }
+                });
+
+                // Slider de radio
+                const slider = document.getElementById('radioSlider');
+                const valueLabel = document.getElementById('radioValue');
+                
+                slider.addEventListener('input', (e) => {
+                    this.radioKm = parseInt(e.target.value);
+                    valueLabel.textContent = `${this.radioKm} km`;
+                    if (this.gasolineras.length > 0) {
+                        this.procesarGasolineras(this.gasolineras);
+                    }
+                });
+            }
+
+            async obtenerUbicacion() {
+                const btn = document.getElementById('ubicacionBtn');
+                btn.style.transform = 'scale(0.9)';
+                btn.innerHTML = '⏳';
+                
+                this.updateMapInfo('🔍 Obteniendo tu ubicación...');
+
+                if (!navigator.geolocation) {
+                    this.showError('Tu navegador no soporta geolocalización');
+                    this.resetFabButton();
+                    return;
+                }
+
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 300000
+                        });
+                    });
+
+                    const { latitude, longitude } = position.coords;
+                    this.ubicacionActual = { lat: latitude, lng: longitude };
+                    
+                    // Zoom cercano al obtener ubicación
+                    this.mapa.setView([latitude, longitude], 16);
+                    
+                    await this.cargarGasolineras();
+                    this.resetFabButton();
+                    
+                } catch (error) {
+                    this.showError('No se pudo obtener tu ubicación. Intenta buscar una dirección.');
+                    this.resetFabButton();
+                }
+            }
+
+            async buscarDireccion() {
+                const direccion = document.getElementById('direccionInput').value.trim();
+                if (!direccion) {
+                    alert('Introduce una dirección o ciudad');
+                    return;
+                }
+
+                this.updateMapInfo('🔍 Buscando dirección...');
+
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1&countrycodes=es`
+                    );
+                    const results = await response.json();
+
+                    if (results.length === 0) {
+                        this.showError('Dirección no encontrada. Intenta con otra búsqueda.');
+                        return;
+                    }
+
+                    const result = results[0];
+                    this.ubicacionActual = {
+                        lat: parseFloat(result.lat),
+                        lng: parseFloat(result.lon)
+                    };
+
+                    // Zoom cercano al buscar dirección
+                    this.mapa.setView([this.ubicacionActual.lat, this.ubicacionActual.lng], 16);
+                    
+                    await this.cargarGasolineras();
+                    
+                } catch (error) {
+                    this.showError('Error al buscar la dirección. Inténtalo de nuevo.');
+                }
+            }
+
+            async cargarGasolineras() {
+                this.updateMapInfo('⛽ Cargando gasolineras...');
+                document.getElementById('listado').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Cargando gasolineras oficiales...
+                    </div>
+                `;
+
+                try {
+                    const response = await fetch(
+                        'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/',
+                        { 
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('Error al obtener datos');
+                    }
+
+                    const data = await response.json();
+                    this.gasolineras = data.ListaEESSPrecio || [];
+                    this.procesarGasolineras(this.gasolineras);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showError('Error al cargar las gasolineras. Inténtalo de nuevo.');
+                }
+            }
+
+            procesarGasolineras(gasolinerasRaw) {
+                if (!this.ubicacionActual) return;
+
+                // Limpiar marcadores anteriores
+                this.marcadores.forEach(marker => this.mapa.removeLayer(marker));
+                this.marcadores = [];
+
+                // Procesar y filtrar gasolineras
+                const gasolinerasProcesadas = gasolinerasRaw
+                    .map(g => this.procesarGasolinera(g))
+                    .filter(g => g !== null)
+                    .filter(g => g.distancia <= this.radioKm)
+                    .sort((a, b) => a.precio - b.precio); // Ordenar por precio (menor a mayor)
+
+                if (gasolinerasProcesadas.length === 0) {
+                    this.updateMapInfo(`❌ No hay gasolineras en ${this.radioKm}km con precios de ${this.getNombreCombustible()}`);
+                    document.getElementById('listado').innerHTML = `
+                        <div class="loading">
+                            No se encontraron gasolineras en el radio seleccionado.<br>
+                            <small>Intenta aumentar el radio de búsqueda</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Crear marcadores en el mapa
+                this.crearMarcadores(gasolinerasProcesadas);
+                
+                // Actualizar listado
+                this.actualizarListado(gasolinerasProcesadas);
+                
+                // Añadir marcador de ubicación del usuario
+                this.marcarUbicacionUsuario();
+
+                this.updateMapInfo(`✅ ${gasolinerasProcesadas.length} gasolineras encontradas`);
+            }
+
+            procesarGasolinera(g) {
+                try {
+                    const lat = parseFloat(g.Latitud?.replace(',', '.'));
+                    const lng = parseFloat(g['Longitud (WGS84)']?.replace(',', '.'));
+                    const precioStr = g[this.combustibleSeleccionado]?.replace(',', '.');
+                    const precio = parseFloat(precioStr);
+
+                    if (isNaN(lat) || isNaN(lng) || isNaN(precio) || precio === 0) {
+                        return null;
+                    }
+
+                    const distancia = this.calcularDistancia(
+                        this.ubicacionActual.lat, this.ubicacionActual.lng,
+                        lat, lng
+                    );
+
+                    return {
+                        id: g['IDEESS'],
+                        nombre: g['Rótulo'] || 'Sin nombre',
+                        direccion: g['Dirección'] || '',
+                        municipio: g['Municipio'] || '',
+                        provincia: g['Provincia'] || '',
+                        lat,
+                        lng,
+                        precio,
+                        distancia
+                    };
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            crearMarcadores(gasolineras) {
+                // Calcular rangos de precios para colorear
+                const precios = gasolineras.map(g => g.precio);
+                const precioMin = Math.min(...precios);
+                const precioMax = Math.max(...precios);
+                const rangoTercio = (precioMax - precioMin) / 3;
+
+                gasolineras.forEach((gasolinera, index) => {
+                    let categoria = 'barato';
+                    if (gasolinera.precio > precioMin + rangoTercio * 2) {
+                        categoria = 'caro';
+                    } else if (gasolinera.precio > precioMin + rangoTercio) {
+                        categoria = 'medio';
+                    }
+
+                    const marcador = L.circleMarker([gasolinera.lat, gasolinera.lng], {
+                        radius: 4,
+                        fillColor: this.colores[categoria],
+                        color: 'white',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    });
+
+                    marcador.bindPopup(`
+                        <div style="text-align: center; min-width: 120px;">
+                            <strong>${gasolinera.nombre}</strong><br>
+                            <span style="color: ${this.colores[categoria]}; font-size: 1.1em; font-weight: bold;">
+                                ${gasolinera.precio.toFixed(3)} €/L
+                            </span><br>
+                            <small>${gasolinera.distancia.toFixed(1)} km</small>
+                        </div>
+                    `);
+
+                    marcador.on('click', () => {
+                        this.seleccionarGasolinera(index);
+                    });
+
+                    marcador.addTo(this.mapa);
+                    this.marcadores.push(marcador);
+                    
+                    // Guardar referencia para sincronización
+                    marcador._gasolineraIndex = index;
+                });
+            }
+
+            actualizarListado(gasolineras) {
+                const listado = document.getElementById('listado');
+                
+                if (gasolineras.length === 0) {
+                    listado.innerHTML = `
+                        <div class="loading">
+                            No hay gasolineras disponibles en el área seleccionada
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Calcular categorías de precios
+                const precios = gasolineras.map(g => g.precio);
+                const precioMin = Math.min(...precios);
+                const precioMax = Math.max(...precios);
+                const rangoTercio = (precioMax - precioMin) / 3;
+
+                const html = gasolineras.map((gasolinera, index) => {
+                    let categoria = 'barato';
+                    if (gasolinera.precio > precioMin + rangoTercio * 2) {
+                        categoria = 'caro';
+                    } else if (gasolinera.precio > precioMin + rangoTercio) {
+                        categoria = 'medio';
+                    }
+
+                    return `
+                        <div class="gasolinera-card" data-index="${index}">
+                            <div class="gasolinera-header">
+                                <div class="gasolinera-nombre">${gasolinera.nombre}</div>
+                                <div class="precio-badge ${categoria}">
+                                    ${gasolinera.precio.toFixed(3)} €/L
+                                </div>
+                            </div>
+                            <div class="gasolinera-info">
+                                📍 ${gasolinera.direccion}, ${gasolinera.municipio}
+                            </div>
+                            <div class="gasolinera-acciones">
+                                <div class="gasolinera-distancia">
+                                    🚗 ${gasolinera.distancia.toFixed(1)} km
+                                </div>
+                                <button class="ruta-btn" onclick="app.abrirRuta(${gasolinera.lat}, ${gasolinera.lng})">
+                                    🗺️ Ir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                listado.innerHTML = html;
+
+                // Añadir eventos de clic a las tarjetas
+                listado.querySelectorAll('.gasolinera-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('ruta-btn')) return;
+                        const index = parseInt(card.dataset.index);
+                        this.seleccionarGasolinera(index);
+                    });
+                });
+            }
+
+            seleccionarGasolinera(index) {
+                // Limpiar selección anterior
+                document.querySelectorAll('.gasolinera-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Seleccionar nueva gasolinera
+                const card = document.querySelector(`[data-index="${index}"]`);
+                if (card) {
+                    card.classList.add('selected');
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                // Abrir popup del marcador correspondiente
+                if (this.marcadores[index]) {
+                    this.marcadores[index].openPopup();
+                }
+
+                this.gasolineraSeleccionada = index;
+            }
+
+            marcarUbicacionUsuario() {
+                if (!this.ubicacionActual) return;
+
+                const marcadorUsuario = L.circleMarker([this.ubicacionActual.lat, this.ubicacionActual.lng], {
+                    radius: 8,
+                    fillColor: '#1a56db',
+                    color: 'white',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 1
+                });
+
+                marcadorUsuario.bindPopup('<strong>📍 Tu ubicación</strong>');
+                marcadorUsuario.addTo(this.mapa);
+                this.marcadores.push(marcadorUsuario);
+            }
+
+            abrirRuta(lat, lng) {
+                const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+                window.open(url, '_blank');
+            }
+
+            calcularDistancia(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Radio de la Tierra en km
+                const dLat = this.toRad(lat2 - lat1);
+                const dLon = this.toRad(lon2 - lon1);
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            toRad(valor) {
+                return valor * Math.PI / 180;
+            }
+
+            updateMapInfo(mensaje) {
+                document.getElementById('mapaInfo').textContent = mensaje;
+            }
+
+            showError(mensaje) {
+                this.updateMapInfo(`❌ ${mensaje}`);
+                document.getElementById('listado').innerHTML = `
+                    <div class="loading" style="color: #ef4444;">
+                        ${mensaje}
+                    </div>
+                `;
+            }
+
+            resetFabButton() {
+                const btn = document.getElementById('ubicacionBtn');
+                btn.innerHTML = '📍';
+                btn.style.transform = 'scale(1)';
+            }
+
+            getNombreCombustible() {
+                const nombres = {
+                    'Precio Gasoleo A': 'Diésel',
+                    'Precio Gasolina 95 E5': 'Gasolina 95',
+                    'Precio Gasolina 98 E5': 'Gasolina 98',
+                    'Precio Gasoleo Premium': 'Diésel Premium',
+                    'Precio Biodiesel': 'Biodiésel',
+                    'Precio Bioetanol': 'Bioetanol'
+                };
+                return nombres[this.combustibleSeleccionado] || 'combustible';
+            }
+        }
+
+        // Inicializar la aplicación
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new GasolinerasApp();
+        });
+    </script>
 </body>
 </html>

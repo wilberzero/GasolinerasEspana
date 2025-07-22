@@ -82,7 +82,7 @@ body {
   box-shadow: 0 0 3px #fff5; 
 }
 
-/* Controles de búsqueda */
+/* CONTROLES DE BÚSQUEDA CORREGIDOS */
 .search-controls { 
   padding: 10px 10px 6px 10px; 
   background: #fff; 
@@ -94,9 +94,10 @@ body {
   margin-bottom: 10px; 
 }
 
+/* Input con padding corregido para evitar solapamientos */
 .search-input {
   width: 100%; 
-  padding: 12px 50px 12px 50px;
+  padding: 12px 55px 12px 55px; /* CORREGIDO: más padding a ambos lados */
   border: 2px solid #e2e8f0;
   border-radius: 11px; 
   background: #f8fafc;
@@ -116,29 +117,41 @@ body {
   font-size: 0.98em; 
 }
 
+/* BOTÓN LUPA CORREGIDO - Perfectamente centrado */
 .search-icon-btn { 
   position: absolute; 
-  left: 10px; 
+  left: 12px; /* CORREGIDO: más margen del borde */
   top: 50%; 
-  transform: translateY(-50%); 
+  transform: translateY(-50%); /* CORREGIDO: centrado perfecto */
   background: none;
   border: none;
-  font-size: 1.17rem; 
+  font-size: 1.2rem; 
   color: #1a56db;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 6px;
+  border-radius: 6px;
   transition: all 0.2s ease;
+  z-index: 10; /* AÑADIDO: z-index para evitar conflictos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .search-icon-btn:hover {
   background: rgba(26, 86, 219, 0.1);
-  transform: translateY(-50%) scale(1.1);
+  transform: translateY(-50%) scale(1.05); /* CORREGIDO: mantiene centrado al hacer hover */
 }
 
+.search-icon-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* BOTÓN X CORREGIDO - Sin solapamientos */
 .clear-btn {
   position: absolute;
-  right: 12px;
+  right: 15px; /* CORREGIDO: más separado del borde */
   top: 50%;
   transform: translateY(-50%);
   background: #ef4444;
@@ -147,17 +160,18 @@ body {
   width: 28px; 
   height: 28px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* CORREGIDO: tamaño ligeramente menor */
   cursor: pointer;
   display: none;
   align-items: center;
   justify-content: center;
-  transition: background .18s;
-  z-index: 999;
+  transition: all 0.2s ease;
+  z-index: 10; /* AÑADIDO: mismo z-index que la lupa */
 }
 
 .clear-btn:hover { 
   background: #dc2626; 
+  transform: translateY(-50%) scale(1.05);
 }
 
 .clear-btn.show { 
@@ -294,7 +308,7 @@ body {
   box-shadow: 0 6px 16px rgba(26,86,219,0.5);
 }
 
-/* LISTADO CON COLORES ACTUALIZADOS */
+/* Listado con colores actualizados */
 .listado-container { 
   flex: 1; 
   background: #fff; 
@@ -318,29 +332,29 @@ body {
   transition: box-shadow .14s;
 }
 
-/* COLORES ACTUALIZADOS - MÍNIMOS Y MÁXIMOS EXACTOS */
+/* Colores para las tarjetas */
 .gasolinera-card.muy-barato {
-  background: #ecfdf5; /* Verde muy claro - SOLO precio mínimo */
+  background: #ecfdf5;
   border-color: #059669;
 }
 
 .gasolinera-card.barato {
-  background: #f7fee7; /* Verde amarillento claro - MÁS VERDE */
+  background: #f7fee7;
   border-color: #84cc16;
 }
 
 .gasolinera-card.medio {
-  background: #fffbeb; /* Amarillo muy claro */
+  background: #fffbeb;
   border-color: #eab308;
 }
 
 .gasolinera-card.caro {
-  background: #fff7ed; /* Amarillo rojizo muy claro */
+  background: #fff7ed;
   border-color: #f97316;
 }
 
 .gasolinera-card.muy-caro {
-  background: #fef2f2; /* Rojo muy claro - SOLO precio máximo */
+  background: #fef2f2;
   border-color: #dc2626;
 }
 
@@ -379,7 +393,7 @@ body {
   font-weight: 500;
 }
 
-/* BADGES CON COLORES ACTUALIZADOS */
+/* Badges con colores actualizados */
 .precio-badge { 
   padding: 5px 8px; 
   border-radius: 6px; 
@@ -389,23 +403,23 @@ body {
 }
 
 .precio-badge.muy-barato {
-  background: #059669; /* Verde intenso - SOLO mínimo */
+  background: #059669;
 }
 
 .precio-badge.barato {
-  background: #84cc16; /* Verde amarillento - MÁS VERDE */
+  background: #84cc16;
 }
 
 .precio-badge.medio {
-  background: #eab308; /* Amarillo */
+  background: #eab308;
 }
 
 .precio-badge.caro {
-  background: #f97316; /* Amarillo rojizo */
+  background: #f97316;
 }
 
 .precio-badge.muy-caro {
-  background: #dc2626; /* Rojo - SOLO máximo */
+  background: #dc2626;
 }
 
 .ruta-btn { 
@@ -447,7 +461,7 @@ body {
   to { transform: rotate(360deg); } 
 }
 
-/* MARCADORES CON COLORES ACTUALIZADOS */
+/* Marcadores con colores actualizados */
 .mapa-marker {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
@@ -467,23 +481,23 @@ body {
 }
 
 .marker-container.muy-barato { 
-  background: #059669; /* Verde intenso - SOLO mínimo */
+  background: #059669;
 }
 
 .marker-container.barato { 
-  background: #84cc16; /* Verde amarillento - MÁS VERDE */
+  background: #84cc16;
 }
 
 .marker-container.medio { 
-  background: #eab308; /* Amarillo */
+  background: #eab308;
 }
 
 .marker-container.caro {
-  background: #f97316; /* Amarillo rojizo */
+  background: #f97316;
 }
 
 .marker-container.muy-caro {
-  background: #dc2626; /* Rojo - SOLO máximo */
+  background: #dc2626;
 }
 
 .marker-brand, .marker-price {
@@ -501,90 +515,4 @@ body {
   font-size: 0.7rem;
 }
 
-/* Responsive móvil */
-@media (max-width: 768px) {
-  body { 
-    font-size: 15px;
-  }
-  
-  .header { 
-    padding: 8px 5px 0 5px;
-  }
-  
-  .header-title { 
-    font-size: 1.1rem;
-  }
-  
-  .combustible-selector { 
-    padding: 0 2px 1px 2px;
-  }
-  
-  .fuel-chip { 
-    font-size: 0.97rem; 
-    padding: 5px 12px; 
-    border-radius: 14px;
-    min-width: 65px;
-  }
-  
-  .search-controls { 
-    padding: 8px 4px 4px 4px;
-  }
-  
-  .search-field {
-    margin-bottom: 6px;
-  }
-  
-  .search-input {
-    font-size: 0.97rem;
-    padding: 9px 45px 9px 45px;
-  }
-  
-  .mapa-container { 
-    height: 35vh; 
-    margin: 4px; 
-    border-radius: 8px;
-  }
-  
-  .listado {
-    max-height: 48vh;
-    padding: 4px 0;
-  }
-  
-  .fab {
-    width: 40px;
-    height: 40px;
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .header {
-    padding: 6px 8px 4px 8px;
-  }
-  
-  .header-title {
-    font-size: 1rem;
-    margin-bottom: 4px;
-  }
-  
-  .fuel-chip {
-    padding: 3px 10px;
-    min-height: 26px;
-    font-size: 0.85rem;
-    min-width: 55px;
-  }
-  
-  .marker-container {
-    padding: 2px 4px;
-    max-width: 80px;
-  }
-  
-  .marker-brand, .marker-price {
-    font-size: 0.7rem;
-    max-width: 70px;
-  }
-  
-  .marker-price {
-    font-size: 0.65rem;
-  }
-}
+/* Responsive

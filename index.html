@@ -14,7 +14,6 @@
         <div class="fuel-chip active" data-fuel="Precio Gasoleo A">Gasóleo A</div>
         <div class="fuel-chip" data-fuel="Precio Gasolina 95 E5">Gasolina 95</div>
         <div class="fuel-chip" data-fuel="Precio Gasolina 98 E5">Gasolina 98</div>
-        <!-- Añadir más combustibles si es necesario -->
       </div>
     </header>
     <div class="search-controls">
@@ -39,9 +38,11 @@
     </div>
   </div>
 
-  <!-- Footer/bottom fijo -->
+  <!-- Botón GPS circular en esquina inferior derecha -->
+  <button id="ubicacionBtn" class="fab" title="Usar ubicación GPS">📍</button>
+  
+  <!-- Footer fijo con hora actualización -->
   <div class="footer-bottom">
-    <button id="ubicacionBtn" class="gps-btn" title="Usar ubicación GPS">📍 GPS</button>
     <span id="actualizacionStamp" class="actualizacion-hora">Actualizado: --</span>
   </div>
 

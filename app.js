@@ -7,7 +7,16 @@ class GasolinerasApp {
     this.combustible = 'Precio Gasoleo A';
     this.radio = 5;
     this.direccionActual = '';
-    this.colores = { barato: '#22c55e', medio: '#eab308', caro: '#ef4444' };
+    
+    // COLORES ACTUALIZADOS PARA MÍNIMOS Y MÁXIMOS EXACTOS
+    this.colores = { 
+      'muy-barato': '#059669',   // Verde intenso - SOLO precio mínimo
+      'barato': '#84cc16',       // Verde amarillento MÁS VERDE
+      'medio': '#eab308',        // Amarillo
+      'caro': '#f97316',         // Amarillo rojizo
+      'muy-caro': '#dc2626'      // Rojo - SOLO precio máximo
+    };
+    
     this.keys = { fuel: 'fuel_pref', radio: 'radio_pref', loc: 'loc_prev' };
     this.init();
   }
@@ -48,7 +57,6 @@ class GasolinerasApp {
   }
 
   vincularEventos() {
-    // Chips de combustible (solo 3 ahora)
     document.querySelectorAll('.fuel-chip').forEach(chip =>
       chip.addEventListener('click', e => {
         document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
@@ -58,7 +66,6 @@ class GasolinerasApp {
         if (this.cache.data) this.procesar(this.cache.data);
       }));
 
-    // Slider radio
     const slider = document.getElementById('radioSlider');
     slider.addEventListener('input', e => {
       this.radio = parseInt(e.target.value);
@@ -67,7 +74,6 @@ class GasolinerasApp {
       if (this.cache.data && this.ubicacion) this.procesar(this.cache.data);
     });
 
-    // Campo de búsqueda y botón X
     const inputDireccion = document.getElementById('direccionInput');
     const clearBtn = document.getElementById('clearBtn');
     
@@ -81,22 +87,19 @@ class GasolinerasApp {
       inputDireccion.focus();
     });
 
-    // Buscar dirección
-    document.getElementById('buscarBtn')
+    document.getElementById('buscarIconBtn')
       .addEventListener('click', () => this.buscarDireccion());
+    
     inputDireccion.addEventListener('keypress', e => {
       if (e.key === 'Enter') this.buscarDireccion();
     });
 
-    // Botón GPS flotante
     document.getElementById('ubicacionBtn')
       .addEventListener('click', () => this.obtenerGPS());
 
-    // Botón centrar en el mapa
     document.getElementById('centrarBtn')
       .addEventListener('click', () => this.centrarEnUbicacion());
 
-    // Asegurar que el filtro activo sea visible
     setTimeout(() => {
       const activeChip = document.querySelector('.fuel-chip.active');
       if (activeChip) {
@@ -273,15 +276,39 @@ class GasolinerasApp {
     this.setInfo(`✅ ${lista.length} gasolineras encontradas`);
   }
 
+  // FUNCIÓN ACTUALIZADA: Sistema de mínimos y máximos exactos
+  determinarCategoria(precio, min, max) {
+    const rango = max - min;
+    const margen25 = rango * 0.25;
+    
+    // VERDE: Solo precio mínimo exacto
+    if (precio === min) {
+      return 'muy-barato';
+    }
+    // ROJO: Solo precio máximo exacto
+    else if (precio === max) {
+      return 'muy-caro';
+    }
+    // VERDE AMARILLENTO: Cerca del mínimo (primeros 25%)
+    else if (precio <= min + margen25) {
+      return 'barato';
+    }
+    // AMARILLO ROJIZO: Cerca del máximo (últimos 25%)
+    else if (precio >= max - margen25) {
+      return 'caro';
+    }
+    // AMARILLO: Zona media (25%-75%)
+    else {
+      return 'medio';
+    }
+  }
+
   marcar(lista) {
     const min = Math.min(...lista.map(g => g.precio));
     const max = Math.max(...lista.map(g => g.precio));
-    const tercio = (max - min) / 3;
     
     lista.forEach((g, i) => {
-      let cat = 'barato';
-      if (g.precio > min + tercio * 2) cat = 'caro';
-      else if (g.precio > min + tercio) cat = 'medio';
+      const cat = this.determinarCategoria(g.precio, min, max);
       
       const icon = L.divIcon({
         className: `mapa-marker`,
@@ -292,7 +319,7 @@ class GasolinerasApp {
               <div class="marker-price">${g.precio.toFixed(3)}€</div>
             </div>
           </div>`,
-        iconSize: [85, 32], // REDUCIDO: más compacto
+        iconSize: [85, 32],
         iconAnchor: [42, 16]
       });
       
@@ -306,12 +333,9 @@ class GasolinerasApp {
   listar(lista) {
     const min = Math.min(...lista.map(g => g.precio));
     const max = Math.max(...lista.map(g => g.precio));
-    const tercio = (max - min) / 3;
     
     const html = lista.map((g, i) => {
-      let cat = 'barato';
-      if (g.precio > min + tercio * 2) cat = 'caro';
-      else if (g.precio > min + tercio) cat = 'medio';
+      const cat = this.determinarCategoria(g.precio, min, max);
       
       return `
         <div class="gasolinera-card ${cat}" data-i="${i}">

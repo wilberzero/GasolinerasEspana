@@ -75,7 +75,7 @@ body {
   box-shadow: 0 0 3px #fff5;
 }
 
-/* CONTROLES DE BÚSQUEDA CORREGIDOS */
+/* CONTROLES DE BÚSQUEDA */
 .search-controls {
   padding: 10px 10px 6px 10px;
   background: #fff;
@@ -256,9 +256,11 @@ body {
   color: #fff;
   transform: scale(1.08);
 }
+
+/* BOTÓN GPS CIRCULAR - ESQUINA INFERIOR DERECHA */
 .fab {
   position: fixed;
-  bottom: 14px;
+  bottom: 70px; /* Encima del footer */
   right: 12px;
   width: 49px;
   height: 49px;
@@ -269,15 +271,18 @@ body {
   font-size: 1.35rem;
   cursor: pointer;
   box-shadow: 0 3px 12px #1e40af2c;
-  z-index: 100;
+  z-index: 1300; /* Mayor que footer (1200) */
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .fab:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 16px rgba(26,86,219,0.5);
 }
 
-/* Footer fijo abajo con hora de actualización siempre visible */
+/* Footer fijo con hora de actualización */
 .footer-bottom {
   position: fixed;
   left: 0;
@@ -288,45 +293,25 @@ body {
   padding: 8px 0 6px 0;
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
-  z-index: 1200;
+  z-index: 1200; /* Menor que botón GPS */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
 }
 .actualizacion-hora {
   font-size: 0.89rem;
   color: #64748b;
-  margin-top: 2px;
   font-family: monospace, monospace;
 }
-.gps-btn {
-  background: #1a56db;
-  color: #fff;
-  font-size: 1.12rem;
-  padding: 8px 24px;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px #1a56db18;
-  margin-bottom: 1px;
-  margin-top: 2px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  font-weight: 600;
-}
-.gps-btn:hover {
-  background: #1e40af;
-  transform: scale(1.04);
-}
 
-/* Listado con colores actualizados */
+/* Listado con colores restaurados */
 .listado-container {
   flex: 1;
   background: #fff;
   margin: 0 7px 8px 7px;
   border-radius: 12px;
   box-shadow: 0 2px 10px #0001;
-  /* Scroll solo aquí */
   height: calc(52vh);
   overflow: hidden;
   margin-bottom: 70px; /* Espacio para footer */
@@ -337,7 +322,7 @@ body {
   padding: 8px 2px;
 }
 
-/* Gasolineras */
+/* Gasolineras con colores restaurados */
 .gasolinera-card {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -346,6 +331,32 @@ body {
   cursor: pointer;
   transition: box-shadow .14s;
 }
+
+/* COLORES DE TARJETAS RESTAURADOS */
+.gasolinera-card.muy-barato {
+  background: #ecfdf5;
+  border-color: #059669;
+}
+.gasolinera-card.barato {
+  background: #f7fee7;
+  border-color: #84cc16;
+}
+.gasolinera-card.medio {
+  background: #fffbeb;
+  border-color: #eab308;
+}
+.gasolinera-card.caro {
+  background: #fff7ed;
+  border-color: #f97316;
+}
+.gasolinera-card.muy-caro {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+.gasolinera-card.selected {
+  box-shadow: 0 2px 12px #1a56db25;
+}
+
 .gasolinera-header {
   display: flex;
   justify-content: space-between;
@@ -367,6 +378,11 @@ body {
   color: #64748b;
   margin-bottom: 8px;
 }
+.gasolinera-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 /* Horarios con color */
 .horario-apertura {
@@ -380,7 +396,7 @@ body {
   color: #dc2626;
 }
 
-/* Precios/badges colores */
+/* Precios/badges colores restaurados */
 .precio-badge {
   padding: 5px 8px;
   border-radius: 6px;
@@ -430,10 +446,47 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Marcadores con colores restaurados */
+.mapa-marker {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+.marker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 2px solid #fff;
+  padding: 2px 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  min-width: unset;
+  max-width: 90px;
+  width: fit-content;
+}
+.marker-container.muy-barato { background: #059669; }
+.marker-container.barato { background: #84cc16; }
+.marker-container.medio { background: #eab308; }
+.marker-container.caro { background: #f97316; }
+.marker-container.muy-caro { background: #dc2626; }
+
+.marker-brand, .marker-price {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.marker-price {
+  font-size: 0.7rem;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .header-title { font-size: 1rem; }
   .listado-container, .listado { font-size: 0.96rem; }
   .footer-bottom { min-height: 40px; font-size: 0.95rem; }
-  .gps-btn { font-size: 1rem; padding: 8px 15px; }
+  .fab { width: 45px; height: 45px; font-size: 1.2rem; }
 }

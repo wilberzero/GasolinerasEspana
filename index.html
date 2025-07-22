@@ -9,10 +9,10 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Cabecera simplificada -->
+    <!-- Cabecera -->
     <header class="header">
-      <h1 class="header-title">⛽ Gasolineras baratas cercanas</h1>
-      <!-- FILTROS SIMPLIFICADOS: Solo Diésel, 95 y 98 -->
+      <h1 class="header-title">Gasolineras baratas cercanas</h1>
+      <!-- Filtros simplificados -->
       <div class="combustible-selector">
         <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
@@ -23,10 +23,9 @@
     <!-- Controles de búsqueda -->
     <section class="search-controls">
       <div class="search-field">
-        <span class="search-icon">🔍</span>
+        <button id="buscarIconBtn" class="search-icon-btn" title="Buscar">🔍</button>
         <input id="direccionInput" class="search-input" placeholder="Buscar dirección o ciudad…" />
         <button id="clearBtn" class="clear-btn" title="Borrar">✕</button>
-        <button id="buscarBtn" class="search-btn">Buscar</button>
       </div>
       <div class="radio-control">
         <label class="radio-label">Radio:</label>
@@ -35,7 +34,7 @@
       </div>
     </section>
 
-    <!-- Mapa con info corregida -->
+    <!-- Mapa -->
     <div class="mapa-container">
       <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
       <div id="mapa"></div>

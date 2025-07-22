@@ -21,7 +21,7 @@ body {
   background: #ffffff;
 }
 
-/* Encabezado simplificado */
+/* Encabezado */
 .header {
   background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
   color: #ffffff; 
@@ -29,7 +29,6 @@ body {
   box-shadow: 0 4px 12px rgba(26, 86, 219, 0.15);
 }
 
-/* Título en una sola línea */
 .header-title { 
   font-size: 1.5rem; 
   font-weight: 600; 
@@ -80,7 +79,7 @@ body {
   font-weight: 600;
 }
 
-/* Controles de búsqueda CORREGIDOS */
+/* Controles de búsqueda */
 .search-controls { 
   padding: 18px; 
   background: #ffffff; 
@@ -94,7 +93,7 @@ body {
 
 .search-input {
   width: 100%; 
-  padding: 14px 120px 14px 50px; /* Más padding a los lados para evitar solapamiento */
+  padding: 14px 120px 14px 50px;
   border: 2px solid #e2e8f0;
   border-radius: 12px; 
   background: #f8fafc; 
@@ -124,7 +123,7 @@ body {
 
 .clear-btn {
   position: absolute;
-  right: 90px; /* Más separado del botón buscar */
+  right: 90px;
   top: 50%;
   transform: translateY(-50%);
   background: #ef4444;
@@ -252,11 +251,11 @@ body {
   font-weight: 500;
 }
 
-/* Botón centrar MOVIDO A LA DERECHA */
+/* Botón centrar en el mapa - LADO DERECHO */
 .map-center-btn {
   position: absolute;
   bottom: 16px;
-  right: 16px; /* CAMBIO: de left a right */
+  right: 16px;
   width: 44px;
   height: 44px;
   background: #ffffff;
@@ -306,7 +305,7 @@ body {
   transform: scale(0.95);
 }
 
-/* Listado SIN HEADER */
+/* Listado sin header */
 .listado-container { 
   flex: 1; 
   background: #ffffff; 
@@ -322,7 +321,7 @@ body {
   padding: 10px; 
 }
 
-/* Tarjetas con COLORES DE FONDO */
+/* Tarjetas con colores de fondo */
 .gasolinera-card {
   border: 1px solid #e2e8f0; 
   border-radius: 8px;
@@ -333,28 +332,28 @@ body {
 }
 
 .gasolinera-card.barato {
-  background: #f0fdf4; /* Verde claro */
-  border-color: #10b981;
+  background: #f0fdf4;
+  border-color: #22c55e;
 }
 
 .gasolinera-card.medio {
-  background: #fefce8; /* Amarillo claro */
-  border-color: #f59e0b;
+  background: #fefce8;
+  border-color: #eab308;
 }
 
 .gasolinera-card.caro {
-  background: #fef2f2; /* Rojo claro */
+  background: #fef2f2;
   border-color: #ef4444;
 }
 
 .gasolinera-card:hover { 
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .gasolinera-card.selected { 
-  box-shadow: 0 4px 16px rgba(26,86,219,0.25);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(26,86,219,0.15);
+  transform: translateY(-1px);
 }
 
 .gasolinera-header {
@@ -399,11 +398,11 @@ body {
 }
 
 .precio-badge.barato { 
-  background: #10b981; 
+  background: #22c55e; 
 }
 
 .precio-badge.medio { 
-  background: #f59e0b; 
+  background: #eab308; 
 }
 
 .precio-badge.caro { 
@@ -450,7 +449,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Marcadores CON FONDO DE COLOR */
+/* Marcadores con fondo de color */
 .mapa-marker { 
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); 
 }
@@ -466,17 +465,16 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Fondos de colores para marcadores */
 .marker-container.barato {
-  background: #10b981; /* Verde sólido */
+  background: #22c55e;
 }
 
 .marker-container.medio {
-  background: #f59e0b; /* Amarillo sólido */
+  background: #eab308;
 }
 
 .marker-container.caro {
-  background: #ef4444; /* Rojo sólido */
+  background: #ef4444;
 }
 
 .marker-text {
@@ -489,7 +487,7 @@ body {
 .marker-brand {
   font-size: 0.85rem; 
   font-weight: 700; 
-  color: #ffffff; /* Texto blanco sobre fondo de color */
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -499,7 +497,7 @@ body {
 .marker-price {
   font-size: 0.8rem; 
   font-weight: 600; 
-  color: #ffffff; /* Texto blanco sobre fondo de color */
+  color: #ffffff;
   white-space: nowrap;
 }
 
@@ -508,33 +506,33 @@ body {
   body {
     font-size: 15px;
   }
-
+  
   .header {
     padding: 16px;
   }
-
+  
   .header-title {
     font-size: 1.3rem;
   }
-
+  
   .search-controls {
     padding: 16px;
   }
-
+  
   .search-input {
     font-size: 1rem;
     padding: 12px 110px 12px 45px;
   }
-
+  
   .mapa-container {
     height: 40vh;
     margin: 12px;
   }
-
+  
   .listado {
     max-height: 45vh;
   }
-
+  
   .fab {
     bottom: 16px;
     right: 16px;
@@ -542,28 +540,24 @@ body {
     height: 52px;
     font-size: 1.4rem;
   }
-
+  
   .map-center-btn {
     width: 40px;
     height: 40px;
     font-size: 1.1rem;
   }
-
+  
   .marker-container {
     min-width: 90px;
-    padding: 6px 10px;
+    padding: 5px 8px;
   }
-
+  
   .marker-brand {
     max-width: 70px;
     font-size: 0.8rem;
   }
-
+  
   .marker-price {
     font-size: 0.75rem;
-  }
-
-  .combustible-selector {
-    justify-content: flex-start;
   }
 }

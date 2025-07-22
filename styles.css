@@ -15,7 +15,7 @@ body {
   background: #fff;
 }
 
-/* Cabecera compacta */
+/* Cabecera */
 .header {
   background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
   color: #fff;
@@ -23,7 +23,7 @@ body {
 }
 
 .header-title {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #fff;
   text-align: center;
@@ -31,12 +31,12 @@ body {
   letter-spacing: 0.1px;
 }
 
-/* Chips de combustible simplificados */
+/* Chips de combustible */
 .combustible-selector {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  justify-content: center; /* Centrar los 3 filtros */
+  justify-content: center;
   padding: 0 8px 4px 8px;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -50,9 +50,9 @@ body {
 }
 
 .fuel-chip {
-  padding: 4px 12px; /* Más ancho por tener menos chips */
+  padding: 4px 12px;
   min-height: 28px;
-  min-width: 70px; /* Más ancho al ser solo 3 */
+  min-width: 70px;
   font-size: 0.9rem;
   border-radius: 14px;
   white-space: nowrap;
@@ -82,7 +82,7 @@ body {
   box-shadow: 0 0 3px #fff5; 
 }
 
-/* Controles compactos */
+/* Controles de búsqueda */
 .search-controls { 
   padding: 10px 10px 6px 10px; 
   background: #fff; 
@@ -96,7 +96,7 @@ body {
 
 .search-input {
   width: 100%; 
-  padding: 12px 90px 12px 44px;
+  padding: 12px 50px 12px 50px;
   border: 2px solid #e2e8f0;
   border-radius: 11px; 
   background: #f8fafc;
@@ -116,19 +116,29 @@ body {
   font-size: 0.98em; 
 }
 
-.search-icon { 
+.search-icon-btn { 
   position: absolute; 
   left: 10px; 
   top: 50%; 
   transform: translateY(-50%); 
+  background: none;
+  border: none;
   font-size: 1.17rem; 
-  color: #64748b; 
+  color: #1a56db;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
-/* CORREGIDO: Botón X posicionado correctamente */
+.search-icon-btn:hover {
+  background: rgba(26, 86, 219, 0.1);
+  transform: translateY(-50%) scale(1.1);
+}
+
 .clear-btn {
   position: absolute;
-  right: 75px; /* Más separado del botón buscar */
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: #ef4444;
@@ -143,7 +153,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: background .18s;
-  z-index: 999; /* AÑADIDO: z-index para que aparezca por encima */
+  z-index: 999;
 }
 
 .clear-btn:hover { 
@@ -152,26 +162,6 @@ body {
 
 .clear-btn.show { 
   display: flex; 
-}
-
-.search-btn {
-  position: absolute; 
-  right: 8px;
-  top: 50%; 
-  transform: translateY(-50%);
-  background: #1a56db;
-  color: #fff;
-  border: none; 
-  padding: 8px 12px; 
-  border-radius: 8px; 
-  font-size: 0.98rem;
-  font-weight: 600; 
-  cursor: pointer; 
-  transition: .15s;
-}
-
-.search-btn:hover { 
-  background: #1e40af; 
 }
 
 /* Slider de radio */
@@ -239,7 +229,6 @@ body {
   width: 100%; 
 }
 
-/* CORREGIDO: Info del mapa con z-index alto para que aparezca */
 .mapa-info {
   position: absolute; 
   top: 12px; 
@@ -250,14 +239,13 @@ body {
   border-radius: 7px;
   font-size: .98rem; 
   color: #374151; 
-  z-index: 1500; /* CORREGIDO: z-index mucho más alto */
+  z-index: 1500;
   border: 1px solid #e5e7eb; 
   font-weight: 500;
   box-shadow: 0 2px 12px rgba(26, 86, 219, 0.15);
   backdrop-filter: blur(8px);
 }
 
-/* Botón centrar derecha */
 .map-center-btn {
   position: absolute;
   bottom: 13px;
@@ -272,7 +260,7 @@ body {
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(26, 86, 219, 0.12);
   transition: all 0.16s;
-  z-index: 20;
+  z-index: 2000;
   display: flex;
   align-items: center; 
   justify-content: center;
@@ -306,7 +294,7 @@ body {
   box-shadow: 0 6px 16px rgba(26,86,219,0.5);
 }
 
-/* Listado compactado y con colores */
+/* LISTADO CON COLORES ACTUALIZADOS */
 .listado-container { 
   flex: 1; 
   background: #fff; 
@@ -330,19 +318,30 @@ body {
   transition: box-shadow .14s;
 }
 
+/* COLORES ACTUALIZADOS - MÍNIMOS Y MÁXIMOS EXACTOS */
+.gasolinera-card.muy-barato {
+  background: #ecfdf5; /* Verde muy claro - SOLO precio mínimo */
+  border-color: #059669;
+}
+
 .gasolinera-card.barato {
-  background: #f0fdf4;
-  border-color: #22c55e;
+  background: #f7fee7; /* Verde amarillento claro - MÁS VERDE */
+  border-color: #84cc16;
 }
 
 .gasolinera-card.medio {
-  background: #fefce8;
+  background: #fffbeb; /* Amarillo muy claro */
   border-color: #eab308;
 }
 
 .gasolinera-card.caro {
-  background: #fef2f2;
-  border-color: #ef4444;
+  background: #fff7ed; /* Amarillo rojizo muy claro */
+  border-color: #f97316;
+}
+
+.gasolinera-card.muy-caro {
+  background: #fef2f2; /* Rojo muy claro - SOLO precio máximo */
+  border-color: #dc2626;
 }
 
 .gasolinera-card.selected { 
@@ -380,6 +379,7 @@ body {
   font-weight: 500;
 }
 
+/* BADGES CON COLORES ACTUALIZADOS */
 .precio-badge { 
   padding: 5px 8px; 
   border-radius: 6px; 
@@ -388,16 +388,24 @@ body {
   font-size: 1.01rem;
 }
 
+.precio-badge.muy-barato {
+  background: #059669; /* Verde intenso - SOLO mínimo */
+}
+
 .precio-badge.barato {
-  background: #22c55e;
+  background: #84cc16; /* Verde amarillento - MÁS VERDE */
 }
 
 .precio-badge.medio {
-  background: #eab308;
+  background: #eab308; /* Amarillo */
 }
 
 .precio-badge.caro {
-  background: #ef4444;
+  background: #f97316; /* Amarillo rojizo */
+}
+
+.precio-badge.muy-caro {
+  background: #dc2626; /* Rojo - SOLO máximo */
 }
 
 .ruta-btn { 
@@ -439,7 +447,7 @@ body {
   to { transform: rotate(360deg); } 
 }
 
-/* CORREGIDOS: Marcadores más pequeños con texto reducido */
+/* MARCADORES CON COLORES ACTUALIZADOS */
 .mapa-marker {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
@@ -451,35 +459,46 @@ body {
   justify-content: center;
   border-radius: 6px;
   border: 2px solid #fff;
-  padding: 2px 5px; /* REDUCIDO: de 3px 6px a 2px 5px */
+  padding: 2px 5px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   min-width: unset;
-  max-width: 90px; /* REDUCIDO: de 100px a 90px */
+  max-width: 90px;
   width: fit-content;
-  background: #22c55e;
+}
+
+.marker-container.muy-barato { 
+  background: #059669; /* Verde intenso - SOLO mínimo */
+}
+
+.marker-container.barato { 
+  background: #84cc16; /* Verde amarillento - MÁS VERDE */
 }
 
 .marker-container.medio { 
-  background: #eab308;
+  background: #eab308; /* Amarillo */
 }
 
 .marker-container.caro {
-  background: #ef4444;
+  background: #f97316; /* Amarillo rojizo */
+}
+
+.marker-container.muy-caro {
+  background: #dc2626; /* Rojo - SOLO máximo */
 }
 
 .marker-brand, .marker-price {
   color: #fff;
-  font-size: 0.75rem; /* REDUCIDO: de 0.85rem a 0.75rem */
+  font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
   text-align: center;
-  max-width: 80px; /* REDUCIDO: de 90px a 80px */
+  max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .marker-price { 
-  font-size: 0.7rem; /* REDUCIDO: de 0.8rem a 0.7rem */
+  font-size: 0.7rem;
 }
 
 /* Responsive móvil */
@@ -493,7 +512,7 @@ body {
   }
   
   .header-title { 
-    font-size: 1.01rem; 
+    font-size: 1.1rem;
   }
   
   .combustible-selector { 
@@ -504,7 +523,7 @@ body {
     font-size: 0.97rem; 
     padding: 5px 12px; 
     border-radius: 14px;
-    min-width: 65px; /* Ajustado para 3 filtros */
+    min-width: 65px;
   }
   
   .search-controls { 
@@ -517,11 +536,7 @@ body {
   
   .search-input {
     font-size: 0.97rem;
-    padding: 9px 80px 9px 38px; /* Ajustado para el botón X */
-  }
-  
-  .clear-btn {
-    right: 70px; /* Ajustado para móvil */
+    padding: 9px 45px 9px 45px;
   }
   
   .mapa-container { 
@@ -542,7 +557,6 @@ body {
   }
 }
 
-/* Pantallas muy pequeñas */
 @media (max-width: 480px) {
   .header {
     padding: 6px 8px 4px 8px;
@@ -557,20 +571,20 @@ body {
     padding: 3px 10px;
     min-height: 26px;
     font-size: 0.85rem;
-    min-width: 55px; /* Ajustado para 3 filtros */
+    min-width: 55px;
   }
   
   .marker-container {
     padding: 2px 4px;
-    max-width: 80px; /* Más pequeño en móvil */
+    max-width: 80px;
   }
   
   .marker-brand, .marker-price {
-    font-size: 0.7rem; /* Más pequeño en móvil */
+    font-size: 0.7rem;
     max-width: 70px;
   }
   
   .marker-price {
-    font-size: 0.65rem; /* Más pequeño en móvil */
+    font-size: 0.65rem;
   }
 }

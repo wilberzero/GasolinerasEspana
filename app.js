@@ -48,7 +48,7 @@ class GasolinerasApp {
   }
 
   vincularEventos() {
-    // Chips de combustible
+    // Chips de combustible (solo 3 ahora)
     document.querySelectorAll('.fuel-chip').forEach(chip =>
       chip.addEventListener('click', e => {
         document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
@@ -96,7 +96,7 @@ class GasolinerasApp {
     document.getElementById('centrarBtn')
       .addEventListener('click', () => this.centrarEnUbicacion());
 
-    // CORRECCIÓN: Asegurar que el filtro activo sea visible
+    // Asegurar que el filtro activo sea visible
     setTimeout(() => {
       const activeChip = document.querySelector('.fuel-chip.active');
       if (activeChip) {
@@ -292,8 +292,8 @@ class GasolinerasApp {
               <div class="marker-price">${g.precio.toFixed(3)}€</div>
             </div>
           </div>`,
-        iconSize: [90, 35], // CORREGIDO: tamaño más compacto
-        iconAnchor: [45, 17]
+        iconSize: [85, 32], // REDUCIDO: más compacto
+        iconAnchor: [42, 16]
       });
       
       const m = L.marker([g.lat, g.lng], { icon }).addTo(this.mapa);

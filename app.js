@@ -2,6 +2,7 @@ class GasolinerasApp {
   constructor() {
     this.mapa = null;
     this.marcadores = [];
+    this.marcadorUbicacion = null; // AÑADIDO: marcador de ubicación
     this.cache = { stamp: 0, data: null, ttl: 5 * 60 * 1000 };
     this.ubicacion = null;
     this.combustible = 'Precio Gasoleo A';
@@ -142,6 +143,18 @@ class GasolinerasApp {
     }
   }
 
+  // RESTAURADO: Agregar marcador de ubicación
+  agregarMarcadorUbicacion() {
+    if (this.marcadorUbicacion) {
+      this.mapa.removeLayer(this.marcadorUbicacion);
+    }
+    if (this.ubicacion) {
+      this.marcadorUbicacion = L.marker([this.ubicacion.lat, this.ubicacion.lng])
+        .addTo(this.mapa)
+        .bindPopup('📍 Tu ubicación');
+    }
+  }
+
   async arranqueAutomatico() {
     this.setInfo('🔍 Iniciando…');
     if (navigator.geolocation) {
@@ -154,6 +167,7 @@ class GasolinerasApp {
         ]);
         this.ubicacion = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
+        this.agregarMarcadorUbicacion(); // RESTAURADO
         if (this.inicializacionTimeout) {
           clearTimeout(this.inicializacionTimeout);
         }
@@ -170,6 +184,7 @@ class GasolinerasApp {
       if (last) {
         this.ubicacion = JSON.parse(last);
         this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
+        this.agregarMarcadorUbicacion(); // RESTAURADO
         if (this.inicializacionTimeout) { clearTimeout(this.inicializacionTimeout); }
         await this.cargarGasolineras();
         return;
@@ -180,6 +195,7 @@ class GasolinerasApp {
     try {
       this.ubicacion = { lat: 40.4168, lng: -3.7038 };
       this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 12);
+      this.agregarMarcadorUbicacion(); // RESTAURADO
       if (this.inicializacionTimeout) { clearTimeout(this.inicializacionTimeout); }
       this.setInfo('📍 Mostrando Madrid. Busca tu ciudad o usa el GPS');
       document.getElementById('direccionInput').placeholder = 'Busca tu ciudad aquí...';
@@ -204,6 +220,7 @@ class GasolinerasApp {
       ]);
       this.ubicacion = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
+      this.agregarMarcadorUbicacion(); // RESTAURADO
       this.guardarPreferencias();
       await this.reverseGeocode();
       await this.cargarGasolineras();
@@ -238,6 +255,7 @@ class GasolinerasApp {
       this.ubicacion = { lat: parseFloat(js[0].lat), lng: parseFloat(js[0].lon) };
       this.direccionActual = js[0].display_name;
       this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
+      this.agregarMarcadorUbicacion(); // RESTAURADO
       this.guardarPreferencias();
       await this.cargarGasolineras();
     } catch (error) {
@@ -274,7 +292,7 @@ class GasolinerasApp {
     if (el) el.textContent = msg;
   }
 
-  // --- UTILIDADES DE FECHA Y HORARIO
+  // UTILIDADES DE FECHA Y HORARIO
   formateaFecha(dateObj) {
     if (!dateObj) return "--";
     const d = typeof dateObj === 'string' ? new Date(dateObj) : dateObj;
@@ -303,71 +321,101 @@ class GasolinerasApp {
     return nowMins >= iniMins && nowMins < finMins;
   }
 
-  // --- FIN UTILIDADES
+  // RESTAURADO: Clasificación de precios
+  clasificarPrecio(precio, precios) {
+    if (!precios.length) return 'medio';
+    precios.sort((a, b) => a - b);
+    const p20 = precios[Math.floor(precios.length * 0.2)];
+    const p40 = precios[Math.floor(precios.length * 0.4)];
+    const p60 = precios[Math.floor(precios.length * 0.6)];
+    const p80 = precios[Math.floor(precios.length * 0.8)];
+    
+    if (precio <= p20) return 'muy-barato';
+    if (precio <= p40) return 'barato';
+    if (precio <= p60) return 'medio';
+    if (precio <= p80) return 'caro';
+    return 'muy-caro';
+  }
 
-  async cargarGasolineras() {
-    this.setInfo('⛽ Cargando gasolineras…');
-    const listadoElement = document.getElementById('listado');
-    if (listadoElement) {
-      listadoElement.innerHTML = `<span class="loading"><span class="loading-spinner"></span> Cargando…</span>`;
-    }
-
-    // Simulación de la llamada. Sustituye esto por tu fetch real.
-    // Puedes usar fetch a la API real de gasolineras…
-    // Por ejemplo:
-    // const resp = await fetch('TU_URL_GASOLINERAS');
-    // const estaciones = await resp.json();
-
-    // DEMO: ejemplo de estaciones y actualización
+  // RESTAURADO: Función para procesar y mostrar gasolineras
+  async procesar(data) {
     const ahora = new Date();
     const updGlobal = this.formateaFecha(ahora);
+    
+    // Inyectar fecha/hora global en footer
+    const stampFooter = document.getElementById('actualizacionStamp');
+    if (stampFooter) stampFooter.textContent = "Actualizado: " + updGlobal;
+
+    // Simular datos de gasolineras con precios y ubicaciones
     const estaciones = [
       {
         nombre: "Repsol Principal",
         direccion: "Calle Falsa 123, Madrid",
         horario: "07:00-22:00",
         distancia: 2.1,
+        lat: this.ubicacion.lat + 0.01,
+        lng: this.ubicacion.lng + 0.01,
         fecha_actualizacion: new Date(ahora.getTime() - 60 * 60000),
-        precios: { 'Precio Gasoleo A': 1.499 }
+        precios: { 'Precio Gasoleo A': 1.499, 'Precio Gasolina 95 E5': 1.599, 'Precio Gasolina 98 E5': 1.699 }
       },
       {
         nombre: "Galp 24h",
         direccion: "Avenida General 45, Getafe",
         horario: "24H",
         distancia: 5.5,
+        lat: this.ubicacion.lat - 0.02,
+        lng: this.ubicacion.lng - 0.01,
         fecha_actualizacion: new Date(ahora.getTime() - 10 * 60000),
-        precios: { 'Precio Gasoleo A': 1.449 }
+        precios: { 'Precio Gasoleo A': 1.449, 'Precio Gasolina 95 E5': 1.549, 'Precio Gasolina 98 E5': 1.649 }
       },
       {
         nombre: "BP Torrejón",
         direccion: "Plaza Mayor 2, Torrejón",
         horario: "08:00-20:00",
         distancia: 12.3,
+        lat: this.ubicacion.lat + 0.03,
+        lng: this.ubicacion.lng - 0.02,
         fecha_actualizacion: new Date(ahora.getTime() - 22 * 60000),
-        precios: { 'Precio Gasoleo A': 1.479 }
+        precios: { 'Precio Gasoleo A': 1.479, 'Precio Gasolina 95 E5': 1.579, 'Precio Gasolina 98 E5': 1.679 }
+      },
+      {
+        nombre: "Shell Centro",
+        direccion: "Gran Vía 100, Madrid",
+        horario: "06:00-23:00",
+        distancia: 3.8,
+        lat: this.ubicacion.lat - 0.01,
+        lng: this.ubicacion.lng + 0.02,
+        fecha_actualizacion: new Date(ahora.getTime() - 5 * 60000),
+        precios: { 'Precio Gasoleo A': 1.509, 'Precio Gasolina 95 E5': 1.609, 'Precio Gasolina 98 E5': 1.709 }
       }
     ];
 
-    // --- FUNCIÓN PARA INYECTAR EN EL FOOTER ---
-    const stampFooter = document.getElementById('actualizacionStamp');
-    if (stampFooter) stampFooter.textContent = "Actualizado: " + updGlobal;
+    // Obtener precios para clasificación
+    const preciosActuales = estaciones
+      .map(e => e.precios && e.precios[this.combustible] ? e.precios[this.combustible] : null)
+      .filter(p => p !== null);
 
-    // Mostrar listado
+    // Limpiar marcadores anteriores
+    this.marcadores.forEach(m => this.mapa.removeLayer(m));
+    this.marcadores = [];
+
+    // Mostrar listado con colores restaurados
+    const listadoElement = document.getElementById('listado');
     if (listadoElement) {
       listadoElement.innerHTML = estaciones.map(est => {
         const abierto = this.estaAbierta(est.horario, ahora);
         const es24h = (est.horario || "").toUpperCase().includes("24");
-        const colorHorario = es24h
-          ? "horario-abierto"
-          : abierto
-            ? "horario-abierto"
-            : "horario-cerrado";
+        const colorHorario = es24h ? "horario-abierto" : abierto ? "horario-abierto" : "horario-cerrado";
         const textoHorario = est.horario || "--";
         const fechaEst = this.formateaFecha(est.fecha_actualizacion || ahora);
-        const precio = est.precios && est.precios[this.combustible] ? (est.precios[this.combustible].toFixed(3) + " €/L") : "--";
+        const precio = est.precios && est.precios[this.combustible] ? est.precios[this.combustible] : null;
+        const precioTexto = precio ? (precio.toFixed(3) + " €/L") : "--";
+        
+        // RESTAURADO: Clasificar precio y aplicar color a la tarjeta
+        const clasificacion = precio ? this.clasificarPrecio(precio, preciosActuales) : 'medio';
 
         return `
-          <div class="gasolinera-card">
+          <div class="gasolinera-card ${clasificacion}">
             <div class="gasolinera-header">
               <span class="gasolinera-nombre">${est.nombre}</span>
               <span class="gasolinera-distancia">${est.distancia ? est.distancia.toFixed(1) + " km" : ""}</span>
@@ -377,18 +425,64 @@ class GasolinerasApp {
               <span class="horario-apertura ${colorHorario}">Horario: ${textoHorario}</span><br>
               <span style="color:#64748b;font-size:0.95em;">Datos: ${fechaEst}</span>
             </div>
-            <div>
-              ${precio !== "--" ?
-                `<span class="precio-badge">${precio}</span>` : ''
+            <div class="gasolinera-acciones">
+              ${precioTexto !== "--" ?
+                `<span class="precio-badge ${clasificacion}">${precioTexto}</span>` : ''
               }
+              <button class="ruta-btn" onclick="window.open('https://maps.google.com/maps?daddr=${est.lat},${est.lng}','_blank')">Ruta</button>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    // Opcional: marcador en el mapa etc.
-    // ... añadir lógica si lo deseas, por brevedad solo listamos
+    // RESTAURADO: Agregar marcadores coloreados al mapa
+    estaciones.forEach(est => {
+      const precio = est.precios && est.precios[this.combustible] ? est.precios[this.combustible] : null;
+      const clasificacion = precio ? this.clasificarPrecio(precio, preciosActuales) : 'medio';
+      const precioTexto = precio ? precio.toFixed(3) : "--";
+      
+      const markerHtml = `
+        <div class="marker-container ${clasificacion}">
+          <div class="marker-brand">${est.nombre.split(' ')[0]}</div>
+          <div class="marker-price">${precioTexto}€</div>
+        </div>
+      `;
+      
+      const customIcon = L.divIcon({
+        html: markerHtml,
+        className: 'mapa-marker',
+        iconSize: [80, 40],
+        iconAnchor: [40, 40]
+      });
+      
+      const marker = L.marker([est.lat, est.lng], { icon: customIcon })
+        .addTo(this.mapa)
+        .bindPopup(`
+          <strong>${est.nombre}</strong><br>
+          ${est.direccion}<br>
+          <strong>${precioTexto}€/L</strong><br>
+          <small>${est.horario}</small>
+        `);
+      
+      this.marcadores.push(marker);
+    });
+
+    this.setInfo(`⛽ ${estaciones.length} gasolineras encontradas`);
+  }
+
+  async cargarGasolineras() {
+    this.setInfo('⛽ Cargando gasolineras…');
+    const listadoElement = document.getElementById('listado');
+    if (listadoElement) {
+      listadoElement.innerHTML = `<span class="loading"><span class="loading-spinner"></span> Cargando…</span>`;
+    }
+
+    // Simular carga de datos
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Procesar con datos simulados
+    await this.procesar([]);
   }
 }
 

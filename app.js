@@ -1,19 +1,16 @@
-/* Lógica principal corregida con marcadores de fondo de color */
+/* Aplicación de Gasolineras España - Versión funcional completa */
 class GasolinerasApp {
   constructor() {
-    /* Estado */
     this.mapa = null;
     this.marcadores = [];
-    this.cache = { stamp: 0, data: null, ttl: 5 * 60 * 1000 };  // 5 min
+    this.cache = { stamp: 0, data: null, ttl: 5 * 60 * 1000 };
     this.ubicacion = null;
     this.combustible = 'Precio Gasoleo A';
     this.radio = 5;
     this.direccionActual = '';
 
-    /* Colores de precio */
-    this.colores = { barato: '#10b981', medio: '#f59e0b', caro: '#ef4444' };
+    this.colores = { barato: '#22c55e', medio: '#eab308', caro: '#ef4444' };
 
-    /* Claves localStorage */
     this.keys = {
       fuel: 'fuel_pref',
       radio: 'radio_pref',
@@ -23,7 +20,6 @@ class GasolinerasApp {
     this.init();
   }
 
-  /* ---------- Inicialización ---------- */
   init() {
     this.iniciarMapa();
     this.cargarPreferencias();
@@ -38,7 +34,6 @@ class GasolinerasApp {
     this.mapa.zoomControl.setPosition('bottomleft');
   }
 
-  /* ---------- Preferencias ---------- */
   cargarPreferencias() {
     const fuel = localStorage.getItem(this.keys.fuel);
     if (fuel) this.combustible = fuel;
@@ -50,7 +45,6 @@ class GasolinerasApp {
       document.getElementById('radioValue').textContent = `${this.radio} km`;
     }
 
-    /* Activar chip correcto */
     document.querySelectorAll('.fuel-chip').forEach(c =>
       c.classList.toggle('active', c.dataset.fuel === this.combustible));
   }
@@ -61,9 +55,8 @@ class GasolinerasApp {
     if (this.ubicacion) localStorage.setItem(this.keys.loc, JSON.stringify(this.ubicacion));
   }
 
-  /* ---------- Eventos UI ---------- */
   vincularEventos() {
-    /* Chips de combustible */
+    // Chips de combustible
     document.querySelectorAll('.fuel-chip').forEach(chip =>
       chip.addEventListener('click', e => {
         document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
@@ -73,19 +66,18 @@ class GasolinerasApp {
         if (this.cache.data) this.procesar(this.cache.data);
       }));
 
-    /* Slider radio - actualización automática */
+    // Slider radio
     const slider = document.getElementById('radioSlider');
     slider.addEventListener('input', e => {
       this.radio = parseInt(e.target.value);
       document.getElementById('radioValue').textContent = `${this.radio} km`;
       this.guardarPreferencias();
-      // Actualizar automáticamente al cambiar el rango
       if (this.cache.data && this.ubicacion) {
         this.procesar(this.cache.data);
       }
     });
 
-    /* Campo de búsqueda y botón X */
+    // Campo de búsqueda y botón X
     const inputDireccion = document.getElementById('direccionInput');
     const clearBtn = document.getElementById('clearBtn');
     
@@ -99,23 +91,22 @@ class GasolinerasApp {
       inputDireccion.focus();
     });
 
-    /* Buscar dirección */
+    // Buscar dirección
     document.getElementById('buscarBtn')
       .addEventListener('click', () => this.buscarDireccion());
     inputDireccion.addEventListener('keypress', e => { 
       if (e.key === 'Enter') this.buscarDireccion(); 
     });
 
-    /* Botón GPS flotante */
+    // Botón GPS flotante
     document.getElementById('ubicacionBtn')
       .addEventListener('click', () => this.obtenerGPS());
 
-    /* Botón centrar en el mapa */
+    // Botón centrar en el mapa
     document.getElementById('centrarBtn')
       .addEventListener('click', () => this.centrarEnUbicacion());
   }
 
-  /* ---------- Centrar mapa ---------- */
   centrarEnUbicacion() {
     if (this.ubicacion) {
       this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
@@ -125,11 +116,9 @@ class GasolinerasApp {
     }
   }
 
-  /* ---------- Inicio automático ---------- */
   async arranqueAutomatico() {
     this.setInfo('🔍 Iniciando…');
 
-    /* Intentar GPS */
     if (navigator.geolocation) {
       try {
         const pos = await new Promise((ok, err) =>
@@ -145,7 +134,6 @@ class GasolinerasApp {
       } catch { /* continúa */ }
     }
 
-    /* Última ubicación guardada */
     const last = localStorage.getItem(this.keys.loc);
     if (last) {
       this.ubicacion = JSON.parse(last);
@@ -154,11 +142,9 @@ class GasolinerasApp {
       return;
     }
 
-    /* Nada disponible aún */
     this.setInfo('📍 Pulsa 📍 o busca una dirección');
   }
 
-  /* ---------- Geolocalización ---------- */
   async obtenerGPS() {
     const fab = document.getElementById('ubicacionBtn');
     fab.textContent = '⏳';
@@ -182,7 +168,6 @@ class GasolinerasApp {
     }
   }
 
-  /* ---------- Buscar dirección ---------- */
   async buscarDireccion() {
     const q = document.getElementById('direccionInput').value.trim();
     if (!q) return alert('Introduce una dirección');
@@ -202,7 +187,6 @@ class GasolinerasApp {
     }
   }
 
-  /* ---------- Geocodificación inversa ---------- */
   async reverseGeocode() {
     if (!this.ubicacion) return;
     try {
@@ -210,7 +194,6 @@ class GasolinerasApp {
       const js = await r.json();
       if (js.display_name) {
         this.direccionActual = js.display_name;
-        // Poner la dirección en el campo de texto
         document.getElementById('direccionInput').value = js.display_name;
         document.getElementById('clearBtn').classList.add('show');
         this.setInfo(`📍 ${js.display_name}`);
@@ -218,9 +201,15 @@ class GasolinerasApp {
     } catch { /* no crítico */ }
   }
 
-  /* ---------- Descarga/caché de datos ---------- */
   async cargarGasolineras() {
     this.setInfo('⛽ Cargando gasolineras…');
+    document.getElementById('listado').innerHTML = `
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Cargando gasolineras oficiales...
+      </div>
+    `;
+
     const now = Date.now();
     if (this.cache.data && now - this.cache.stamp < this.cache.ttl) {
       this.procesar(this.cache.data);
@@ -233,19 +222,21 @@ class GasolinerasApp {
       this.cache = { stamp: now, data: js.ListaEESSPrecio, ttl: this.cache.ttl };
       this.procesar(this.cache.data);
     } catch { 
-      this.setInfo('❌ Error cargando datos'); 
+      this.setInfo('❌ Error cargando datos');
+      document.getElementById('listado').innerHTML = `
+        <div class="loading">
+          Error al cargar las gasolineras. Inténtalo de nuevo.
+        </div>
+      `;
     }
   }
 
-  /* ---------- Procesamiento y filtrado ---------- */
   procesar(arr) {
     if (!this.ubicacion) return;
     
-    /* Limpiar mapa */
     this.marcadores.forEach(m => this.mapa.removeLayer(m));
     this.marcadores = [];
 
-    /* Convertir y filtrar */
     const lista = arr.map(g => {
       const lat = parseFloat(g.Latitud.replace(',', '.'));
       const lng = parseFloat(g['Longitud (WGS84)'].replace(',', '.'));
@@ -262,12 +253,11 @@ class GasolinerasApp {
         dist 
       };
     }).filter(Boolean)
-      // Ordenamiento mejorado - primero por precio, luego por distancia
       .sort((a, b) => {
-        if (Math.abs(a.precio - b.precio) < 0.001) { // Mismo precio
-          return a.dist - b.dist; // Ordenar por distancia
+        if (Math.abs(a.precio - b.precio) < 0.001) {
+          return a.dist - b.dist;
         }
-        return a.precio - b.precio; // Ordenar por precio
+        return a.precio - b.precio;
       });
 
     if (!lista.length) {
@@ -287,7 +277,6 @@ class GasolinerasApp {
     this.setInfo(`✅ ${lista.length} gasolineras encontradas`);
   }
 
-  /* ---------- Crear marcadores CON FONDO DE COLOR ---------- */
   marcar(lista) {
     const min = Math.min(...lista.map(g => g.precio));
     const max = Math.max(...lista.map(g => g.precio));
@@ -298,7 +287,6 @@ class GasolinerasApp {
       if (g.precio > min + tercio * 2) cat = 'caro';
       else if (g.precio > min + tercio) cat = 'medio';
 
-      // Marcador con fondo de color (sin círculo separado)
       const icon = L.divIcon({
         className: `mapa-marker`,
         html: `
@@ -319,7 +307,6 @@ class GasolinerasApp {
     });
   }
 
-  /* ---------- Listado CON COLORES DE FONDO ---------- */
   listar(lista) {
     const min = Math.min(...lista.map(g => g.precio));
     const max = Math.max(...lista.map(g => g.precio));
@@ -363,7 +350,6 @@ class GasolinerasApp {
     if (this.marcadores[i]) this.marcadores[i].openPopup();
   }
 
-  /* ---------- Utilidades ---------- */
   marcarUsuario() {
     if (!this.ubicacion) return;
     const marcadorUsuario = L.circleMarker([this.ubicacion.lat, this.ubicacion.lng], {
@@ -393,7 +379,6 @@ class GasolinerasApp {
   }
 }
 
-/* Arranque */
 let app;
 window.addEventListener('DOMContentLoaded', () => { 
   app = new GasolinerasApp(); 

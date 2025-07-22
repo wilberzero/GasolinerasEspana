@@ -8,13 +8,12 @@ class GasolinerasApp {
     this.radio = 5;
     this.direccionActual = '';
     
-    // COLORES ACTUALIZADOS PARA MÍNIMOS Y MÁXIMOS EXACTOS
     this.colores = { 
-      'muy-barato': '#059669',   // Verde intenso - SOLO precio mínimo
-      'barato': '#84cc16',       // Verde amarillento MÁS VERDE
-      'medio': '#eab308',        // Amarillo
-      'caro': '#f97316',         // Amarillo rojizo
-      'muy-caro': '#dc2626'      // Rojo - SOLO precio máximo
+      'muy-barato': '#059669',
+      'barato': '#84cc16',
+      'medio': '#eab308',
+      'caro': '#f97316',
+      'muy-caro': '#dc2626'
     };
     
     this.keys = { fuel: 'fuel_pref', radio: 'radio_pref', loc: 'loc_prev' };
@@ -56,7 +55,9 @@ class GasolinerasApp {
     if (this.ubicacion) localStorage.setItem(this.keys.loc, JSON.stringify(this.ubicacion));
   }
 
+  // EVENTOS CORREGIDOS - Enter funciona igual que la lupa
   vincularEventos() {
+    // Chips de combustible
     document.querySelectorAll('.fuel-chip').forEach(chip =>
       chip.addEventListener('click', e => {
         document.querySelectorAll('.fuel-chip').forEach(c => c.classList.remove('active'));
@@ -66,6 +67,7 @@ class GasolinerasApp {
         if (this.cache.data) this.procesar(this.cache.data);
       }));
 
+    // Slider radio
     const slider = document.getElementById('radioSlider');
     slider.addEventListener('input', e => {
       this.radio = parseInt(e.target.value);
@@ -74,6 +76,7 @@ class GasolinerasApp {
       if (this.cache.data && this.ubicacion) this.procesar(this.cache.data);
     });
 
+    // Campo de búsqueda y botón X
     const inputDireccion = document.getElementById('direccionInput');
     const clearBtn = document.getElementById('clearBtn');
     
@@ -87,19 +90,29 @@ class GasolinerasApp {
       inputDireccion.focus();
     });
 
-    document.getElementById('buscarIconBtn')
-      .addEventListener('click', () => this.buscarDireccion());
+    // CORREGIDO: Botón lupa con ID correcto
+    const searchBtn = document.getElementById('searchIconBtn');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', () => this.buscarDireccion());
+    }
     
-    inputDireccion.addEventListener('keypress', e => {
-      if (e.key === 'Enter') this.buscarDireccion();
+    // CORREGIDO: Enter funciona igual que hacer clic en la lupa
+    inputDireccion.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Prevenir submit del form
+        this.buscarDireccion();
+      }
     });
 
+    // Botón GPS flotante
     document.getElementById('ubicacionBtn')
       .addEventListener('click', () => this.obtenerGPS());
 
+    // Botón centrar en el mapa
     document.getElementById('centrarBtn')
       .addEventListener('click', () => this.centrarEnUbicacion());
 
+    // Asegurar que el filtro activo sea visible
     setTimeout(() => {
       const activeChip = document.querySelector('.fuel-chip.active');
       if (activeChip) {
@@ -132,15 +145,21 @@ class GasolinerasApp {
         await this.reverseGeocode();
         await this.cargarGasolineras();
         return;
-      } catch { }
+      } catch { 
+        console.log('GPS no disponible, intentando con última ubicación');
+      }
     }
     
     const last = localStorage.getItem(this.keys.loc);
     if (last) {
-      this.ubicacion = JSON.parse(last);
-      this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
-      await this.cargarGasolineras();
-      return;
+      try {
+        this.ubicacion = JSON.parse(last);
+        this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
+        await this.cargarGasolineras();
+        return;
+      } catch {
+        console.log('Error al cargar última ubicación');
+      }
     }
     
     this.setInfo('📍 Pulsa 📍 o busca una dirección');
@@ -148,6 +167,7 @@ class GasolinerasApp {
 
   async obtenerGPS() {
     const fab = document.getElementById('ubicacionBtn');
+    const originalText = fab.textContent;
     fab.textContent = '⏳';
     this.setInfo('🔍 Obteniendo GPS…');
     
@@ -162,44 +182,60 @@ class GasolinerasApp {
       this.guardarPreferencias();
       await this.reverseGeocode();
       await this.cargarGasolineras();
-    } catch {
+    } catch (error) {
+      console.error('Error GPS:', error);
       this.setInfo('❌ No se pudo obtener GPS');
     } finally {
-      fab.textContent = '📍';
+      fab.textContent = originalText;
     }
   }
 
   async buscarDireccion() {
     const q = document.getElementById('direccionInput').value.trim();
-    if (!q) return alert('Introduce una dirección');
+    if (!q) {
+      alert('Introduce una dirección');
+      return;
+    }
+    
     this.setInfo('🔍 Buscando…');
     
     try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=es`);
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=es`;
+      const r = await fetch(url);
       const js = await r.json();
-      if (!js.length) throw 0;
-      this.ubicacion = { lat: +js[0].lat, lng: +js[0].lon };
+      
+      if (!js.length) {
+        throw new Error('No se encontró la dirección');
+      }
+      
+      this.ubicacion = { lat: parseFloat(js[0].lat), lng: parseFloat(js[0].lon) };
       this.direccionActual = js[0].display_name;
       this.mapa.setView([this.ubicacion.lat, this.ubicacion.lng], 16);
       this.guardarPreferencias();
       await this.cargarGasolineras();
-    } catch {
+    } catch (error) {
+      console.error('Error búsqueda:', error);
       this.setInfo('❌ Dirección no encontrada');
     }
   }
 
   async reverseGeocode() {
     if (!this.ubicacion) return;
+    
     try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.ubicacion.lat}&lon=${this.ubicacion.lng}`);
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.ubicacion.lat}&lon=${this.ubicacion.lng}`;
+      const r = await fetch(url);
       const js = await r.json();
+      
       if (js.display_name) {
         this.direccionActual = js.display_name;
         document.getElementById('direccionInput').value = js.display_name;
         document.getElementById('clearBtn').classList.add('show');
         this.setInfo(`📍 ${js.display_name}`);
       }
-    } catch { }
+    } catch (error) {
+      console.error('Error geocodificación inversa:', error);
+    }
   }
 
   async cargarGasolineras() {
@@ -219,10 +255,14 @@ class GasolinerasApp {
     
     try {
       const r = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/');
+      if (!r.ok) {
+        throw new Error(`HTTP error! status: ${r.status}`);
+      }
       const js = await r.json();
       this.cache = { stamp: now, data: js.ListaEESSPrecio, ttl: this.cache.ttl };
       this.procesar(this.cache.data);
-    } catch {
+    } catch (error) {
+      console.error('Error cargando gasolineras:', error);
       this.setInfo('❌ Error cargando datos');
       document.getElementById('listado').innerHTML = `
         <div class="loading">
@@ -233,26 +273,34 @@ class GasolinerasApp {
   }
 
   procesar(arr) {
-    if (!this.ubicacion) return;
+    if (!this.ubicacion || !arr) return;
     
     this.marcadores.forEach(m => this.mapa.removeLayer(m));
     this.marcadores = [];
     
     const lista = arr.map(g => {
-      const lat = parseFloat(g.Latitud.replace(',', '.'));
-      const lng = parseFloat(g['Longitud (WGS84)'].replace(',', '.'));
-      const price = parseFloat(g[this.combustible]?.replace(',', '.'));
-      if (isNaN(lat) || isNaN(lng) || isNaN(price) || price === 0) return null;
-      const dist = this.dist(this.ubicacion.lat, this.ubicacion.lng, lat, lng);
-      if (dist > this.radio) return null;
-      return { 
-        brand: g['Rótulo'] || 'Sin marca', 
-        dir: g.Dirección, 
-        mun: g.Municipio, 
-        lat, lng, 
-        precio: price, 
-        dist 
-      };
+      try {
+        const lat = parseFloat(g.Latitud.replace(',', '.'));
+        const lng = parseFloat(g['Longitud (WGS84)'].replace(',', '.'));
+        const price = parseFloat(g[this.combustible]?.replace(',', '.'));
+        
+        if (isNaN(lat) || isNaN(lng) || isNaN(price) || price === 0) return null;
+        
+        const dist = this.dist(this.ubicacion.lat, this.ubicacion.lng, lat, lng);
+        if (dist > this.radio) return null;
+        
+        return { 
+          brand: g['Rótulo'] || 'Sin marca', 
+          dir: g.Dirección || 'Sin dirección', 
+          mun: g.Municipio || '', 
+          lat, lng, 
+          precio: price, 
+          dist 
+        };
+      } catch (error) {
+        console.error('Error procesando gasolinera:', error);
+        return null;
+      }
     }).filter(Boolean)
     .sort((a, b) => {
       if (Math.abs(a.precio - b.precio) < 0.001) return a.dist - b.dist;
@@ -276,29 +324,21 @@ class GasolinerasApp {
     this.setInfo(`✅ ${lista.length} gasolineras encontradas`);
   }
 
-  // FUNCIÓN ACTUALIZADA: Sistema de mínimos y máximos exactos
   determinarCategoria(precio, min, max) {
+    if (max === min) return 'muy-barato'; // Si todos los precios son iguales
+    
     const rango = max - min;
     const margen25 = rango * 0.25;
     
-    // VERDE: Solo precio mínimo exacto
     if (precio === min) {
       return 'muy-barato';
-    }
-    // ROJO: Solo precio máximo exacto
-    else if (precio === max) {
+    } else if (precio === max) {
       return 'muy-caro';
-    }
-    // VERDE AMARILLENTO: Cerca del mínimo (primeros 25%)
-    else if (precio <= min + margen25) {
+    } else if (precio <= min + margen25) {
       return 'barato';
-    }
-    // AMARILLO ROJIZO: Cerca del máximo (últimos 25%)
-    else if (precio >= max - margen25) {
+    } else if (precio >= max - margen25) {
       return 'caro';
-    }
-    // AMARILLO: Zona media (25%-75%)
-    else {
+    } else {
       return 'medio';
     }
   }
@@ -389,17 +429,29 @@ class GasolinerasApp {
   }
   
   setInfo(t) { 
-    document.getElementById('mapaInfo').textContent = t; 
+    const infoElement = document.getElementById('mapaInfo');
+    if (infoElement) {
+      infoElement.textContent = t;
+    }
   }
   
   dist(a1, o1, a2, o2) {
-    const R = 6371, dLat = (a2 - a1) * Math.PI / 180, dLon = (o2 - o1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(a1 * Math.PI / 180) * Math.cos(a2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    const R = 6371;
+    const dLat = (a2 - a1) * Math.PI / 180;
+    const dLon = (o2 - o1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 + 
+              Math.cos(a1 * Math.PI / 180) * Math.cos(a2 * Math.PI / 180) * 
+              Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 }
 
+// INICIALIZACIÓN CORREGIDA
 let app;
 window.addEventListener('DOMContentLoaded', () => {
-  app = new GasolinerasApp();
+  try {
+    app = new GasolinerasApp();
+  } catch (error) {
+    console.error('Error al inicializar la aplicación:', error);
+  }
 });

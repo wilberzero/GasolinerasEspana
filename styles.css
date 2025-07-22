@@ -1,0 +1,569 @@
+/* Reset & base */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Contenedor principal */
+.app-container { 
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column;
+  background: #ffffff;
+}
+
+/* Encabezado simplificado */
+.header {
+  background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
+  color: #ffffff; 
+  padding: 18px; 
+  box-shadow: 0 4px 12px rgba(26, 86, 219, 0.15);
+}
+
+/* Título en una sola línea */
+.header-title { 
+  font-size: 1.5rem; 
+  font-weight: 600; 
+  margin-bottom: 16px;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* Chips de combustible */
+.combustible-selector { 
+  display: flex; 
+  gap: 10px; 
+  overflow-x: auto; 
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: center;
+}
+
+.combustible-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.fuel-chip {
+  background: rgba(255,255,255,0.2); 
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #ffffff; 
+  padding: 10px 14px; 
+  border-radius: 20px; 
+  font-size: 1rem;
+  cursor: pointer; 
+  white-space: nowrap; 
+  transition: all 0.2s ease;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fuel-chip:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.fuel-chip.active { 
+  background: #ffffff; 
+  color: #1a56db; 
+  border-color: #ffffff;
+  font-weight: 600;
+}
+
+/* Controles de búsqueda CORREGIDOS */
+.search-controls { 
+  padding: 18px; 
+  background: #ffffff; 
+  border-bottom: 1px solid #e2e8f0; 
+}
+
+.search-field { 
+  position: relative; 
+  margin-bottom: 18px; 
+}
+
+.search-input {
+  width: 100%; 
+  padding: 14px 120px 14px 50px; /* Más padding a los lados para evitar solapamiento */
+  border: 2px solid #e2e8f0;
+  border-radius: 12px; 
+  background: #f8fafc; 
+  font-size: 1.1rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1a56db;
+  background: #ffffff;
+}
+
+.search-input::placeholder {
+  color: #64748b;
+}
+
+.search-icon { 
+  position: absolute; 
+  left: 18px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  font-size: 1.3rem;
+  color: #64748b;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 90px; /* Más separado del botón buscar */
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #dc2626;
+}
+
+.clear-btn.show {
+  display: flex;
+}
+
+.search-btn {
+  position: absolute; 
+  right: 8px; 
+  top: 50%; 
+  transform: translateY(-50%);
+  background: #1a56db; 
+  color: #ffffff; 
+  border: none; 
+  padding: 10px 14px;
+  border-radius: 8px; 
+  font-size: 1rem; 
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.search-btn:hover {
+  background: #1e40af;
+}
+
+/* Slider de radio */
+.radio-control { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+}
+
+.radio-label {
+  font-size: 1rem;
+  color: #374151;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.radio-slider { 
+  flex: 1; 
+  height: 6px; 
+  background: #e2e8f0; 
+  border-radius: 3px; 
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.radio-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px; 
+  height: 22px; 
+  background: #1a56db; 
+  border-radius: 50%; 
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(26, 86, 219, 0.3);
+}
+
+.radio-slider::-moz-range-thumb {
+  width: 22px; 
+  height: 22px; 
+  background: #1a56db; 
+  border-radius: 50%; 
+  cursor: pointer; 
+  border: none;
+  box-shadow: 0 2px 4px rgba(26, 86, 219, 0.3);
+}
+
+.radio-value { 
+  font-weight: 700; 
+  color: #1a56db; 
+  font-size: 1.1rem;
+  min-width: 65px;
+  text-align: center;
+}
+
+/* Mapa */
+.mapa-container { 
+  position: relative; 
+  height: 45vh; 
+  margin: 16px; 
+  border-radius: 12px; 
+  overflow: hidden; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#mapa { 
+  height: 100%; 
+  width: 100%; 
+}
+
+.mapa-info {
+  position: absolute; 
+  top: 16px; 
+  left: 16px; 
+  right: 16px;
+  background: rgba(255,255,255,0.95); 
+  padding: 14px 18px; 
+  border-radius: 8px;
+  font-size: 1rem; 
+  color: #374151; 
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0,0,0,0.05);
+  font-weight: 500;
+}
+
+/* Botón centrar MOVIDO A LA DERECHA */
+.map-center-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px; /* CAMBIO: de left a right */
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border: 2px solid #1a56db;
+  border-radius: 8px;
+  color: #1a56db;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(26, 86, 219, 0.2);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-center-btn:hover {
+  background: #1a56db;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* FAB */
+.fab {
+  position: fixed; 
+  bottom: 24px; 
+  right: 24px; 
+  width: 60px; 
+  height: 60px;
+  background: #1a56db; 
+  border: none; 
+  border-radius: 50%; 
+  color: #ffffff;
+  font-size: 1.6rem; 
+  cursor: pointer; 
+  box-shadow: 0 4px 12px rgba(26,86,219,0.4);
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(26,86,219,0.5);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+/* Listado SIN HEADER */
+.listado-container { 
+  flex: 1; 
+  background: #ffffff; 
+  margin: 0 16px 16px; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.listado { 
+  max-height: 50vh; 
+  overflow-y: auto; 
+  padding: 10px; 
+}
+
+/* Tarjetas con COLORES DE FONDO */
+.gasolinera-card {
+  border: 1px solid #e2e8f0; 
+  border-radius: 8px;
+  padding: 14px; 
+  margin-bottom: 10px; 
+  cursor: pointer; 
+  transition: all 0.2s ease;
+}
+
+.gasolinera-card.barato {
+  background: #f0fdf4; /* Verde claro */
+  border-color: #10b981;
+}
+
+.gasolinera-card.medio {
+  background: #fefce8; /* Amarillo claro */
+  border-color: #f59e0b;
+}
+
+.gasolinera-card.caro {
+  background: #fef2f2; /* Rojo claro */
+  border-color: #ef4444;
+}
+
+.gasolinera-card:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gasolinera-card.selected { 
+  box-shadow: 0 4px 16px rgba(26,86,219,0.25);
+  transform: translateY(-2px);
+}
+
+.gasolinera-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.gasolinera-nombre {
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+  font-size: 1.1rem;
+}
+
+.gasolinera-info {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.gasolinera-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gasolinera-distancia {
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.precio-badge { 
+  padding: 6px 10px; 
+  border-radius: 6px; 
+  color: #ffffff; 
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.precio-badge.barato { 
+  background: #10b981; 
+}
+
+.precio-badge.medio { 
+  background: #f59e0b; 
+}
+
+.precio-badge.caro { 
+  background: #ef4444; 
+}
+
+.ruta-btn {
+  background: #1a56db;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.ruta-btn:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+/* Estado de carga */
+.loading {
+  text-align: center;
+  padding: 28px;
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  border-top-color: #1a56db;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Marcadores CON FONDO DE COLOR */
+.mapa-marker { 
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); 
+}
+
+.marker-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid #ffffff;
+  min-width: 100px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Fondos de colores para marcadores */
+.marker-container.barato {
+  background: #10b981; /* Verde sólido */
+}
+
+.marker-container.medio {
+  background: #f59e0b; /* Amarillo sólido */
+}
+
+.marker-container.caro {
+  background: #ef4444; /* Rojo sólido */
+}
+
+.marker-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  flex: 1;
+}
+
+.marker-brand {
+  font-size: 0.85rem; 
+  font-weight: 700; 
+  color: #ffffff; /* Texto blanco sobre fondo de color */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.marker-price {
+  font-size: 0.8rem; 
+  font-weight: 600; 
+  color: #ffffff; /* Texto blanco sobre fondo de color */
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .header-title {
+    font-size: 1.3rem;
+  }
+
+  .search-controls {
+    padding: 16px;
+  }
+
+  .search-input {
+    font-size: 1rem;
+    padding: 12px 110px 12px 45px;
+  }
+
+  .mapa-container {
+    height: 40vh;
+    margin: 12px;
+  }
+
+  .listado {
+    max-height: 45vh;
+  }
+
+  .fab {
+    bottom: 16px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+
+  .map-center-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .marker-container {
+    min-width: 90px;
+    padding: 6px 10px;
+  }
+
+  .marker-brand {
+    max-width: 70px;
+    font-size: 0.8rem;
+  }
+
+  .marker-price {
+    font-size: 0.75rem;
+  }
+
+  .combustible-selector {
+    justify-content: flex-start;
+  }
+}

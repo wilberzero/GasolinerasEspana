@@ -31,12 +31,12 @@ body {
   letter-spacing: 0.1px;
 }
 
-/* Chips de combustible - CORREGIDOS para visibilidad */
+/* Chips de combustible simplificados */
 .combustible-selector {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   overflow-x: auto;
-  justify-content: flex-start;
+  justify-content: center; /* Centrar los 3 filtros */
   padding: 0 8px 4px 8px;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -50,9 +50,9 @@ body {
 }
 
 .fuel-chip {
-  padding: 4px 10px;
+  padding: 4px 12px; /* Más ancho por tener menos chips */
   min-height: 28px;
-  min-width: 60px;
+  min-width: 70px; /* Más ancho al ser solo 3 */
   font-size: 0.9rem;
   border-radius: 14px;
   white-space: nowrap;
@@ -125,9 +125,10 @@ body {
   color: #64748b; 
 }
 
+/* CORREGIDO: Botón X posicionado correctamente */
 .clear-btn {
   position: absolute;
-  right: 65px;
+  right: 75px; /* Más separado del botón buscar */
   top: 50%;
   transform: translateY(-50%);
   background: #ef4444;
@@ -142,6 +143,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: background .18s;
+  z-index: 999; /* AÑADIDO: z-index para que aparezca por encima */
 }
 
 .clear-btn:hover { 
@@ -237,20 +239,22 @@ body {
   width: 100%; 
 }
 
+/* CORREGIDO: Info del mapa con z-index alto para que aparezca */
 .mapa-info {
   position: absolute; 
   top: 12px; 
   left: 10px; 
   right: 10px;
-  background: #fff; 
+  background: rgba(255,255,255,0.95); 
   padding: 9px 13px; 
   border-radius: 7px;
   font-size: .98rem; 
   color: #374151; 
-  z-index: 10;
+  z-index: 1500; /* CORREGIDO: z-index mucho más alto */
   border: 1px solid #e5e7eb; 
   font-weight: 500;
-  box-shadow: 0 1px 9px #1a56db09;
+  box-shadow: 0 2px 12px rgba(26, 86, 219, 0.15);
+  backdrop-filter: blur(8px);
 }
 
 /* Botón centrar derecha */
@@ -435,7 +439,7 @@ body {
   to { transform: rotate(360deg); } 
 }
 
-/* Marcadores CORREGIDOS - más compactos y ajustados al texto */
+/* CORREGIDOS: Marcadores más pequeños con texto reducido */
 .mapa-marker {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
@@ -447,10 +451,10 @@ body {
   justify-content: center;
   border-radius: 6px;
   border: 2px solid #fff;
-  padding: 3px 6px;
+  padding: 2px 5px; /* REDUCIDO: de 3px 6px a 2px 5px */
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   min-width: unset;
-  max-width: 100px;
+  max-width: 90px; /* REDUCIDO: de 100px a 90px */
   width: fit-content;
   background: #22c55e;
 }
@@ -465,17 +469,17 @@ body {
 
 .marker-brand, .marker-price {
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 0.75rem; /* REDUCIDO: de 0.85rem a 0.75rem */
   font-weight: 700;
   white-space: nowrap;
   text-align: center;
-  max-width: 90px;
+  max-width: 80px; /* REDUCIDO: de 90px a 80px */
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .marker-price { 
-  font-size: 0.8rem; 
+  font-size: 0.7rem; /* REDUCIDO: de 0.8rem a 0.7rem */
 }
 
 /* Responsive móvil */
@@ -498,8 +502,9 @@ body {
   
   .fuel-chip { 
     font-size: 0.97rem; 
-    padding: 5px 9px; 
-    border-radius: 14px; 
+    padding: 5px 12px; 
+    border-radius: 14px;
+    min-width: 65px; /* Ajustado para 3 filtros */
   }
   
   .search-controls { 
@@ -512,7 +517,11 @@ body {
   
   .search-input {
     font-size: 0.97rem;
-    padding: 9px 65px 9px 38px;
+    padding: 9px 80px 9px 38px; /* Ajustado para el botón X */
+  }
+  
+  .clear-btn {
+    right: 70px; /* Ajustado para móvil */
   }
   
   .mapa-container { 
@@ -545,23 +554,23 @@ body {
   }
   
   .fuel-chip {
-    padding: 3px 8px;
+    padding: 3px 10px;
     min-height: 26px;
     font-size: 0.85rem;
-    min-width: 50px;
+    min-width: 55px; /* Ajustado para 3 filtros */
   }
   
   .marker-container {
-    padding: 2px 5px;
-    max-width: 85px;
+    padding: 2px 4px;
+    max-width: 80px; /* Más pequeño en móvil */
   }
   
   .marker-brand, .marker-price {
-    font-size: 0.8rem;
-    max-width: 75px;
+    font-size: 0.7rem; /* Más pequeño en móvil */
+    max-width: 70px;
   }
   
   .marker-price {
-    font-size: 0.75rem;
+    font-size: 0.65rem; /* Más pequeño en móvil */
   }
 }

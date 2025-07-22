@@ -1,60 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gasolineras España – Mejor precio</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>Gasolineras Baratas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app-container">
-    <!-- Cabecera -->
     <header class="header">
-      <h1 class="header-title">Gasolineras baratas cercanas</h1>
-      <!-- Filtros simplificados -->
+      <h1 class="header-title">Gasolineras Baratas</h1>
       <div class="combustible-selector">
-        <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
-        <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
-        <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">🏎️ 98</button>
+        <div class="fuel-chip active" data-fuel="Precio Gasoleo A">Gasóleo A</div>
+        <div class="fuel-chip" data-fuel="Precio Gasolina 95 E5">Gasolina 95</div>
+        <div class="fuel-chip" data-fuel="Precio Gasolina 98 E5">Gasolina 98</div>
+        <!-- Añadir más combustibles si es necesario -->
       </div>
     </header>
-
-    <!-- Controles de búsqueda CORREGIDOS -->
-    <section class="search-controls">
+    <div class="search-controls">
       <div class="search-field">
-        <button id="searchIconBtn" class="search-icon-btn" title="Buscar">🔍</button>
-        <input id="direccionInput" class="search-input" placeholder="Buscar dirección o ciudad…" />
-        <button id="clearBtn" class="clear-btn" title="Borrar">✕</button>
+        <button id="searchIconBtn" class="search-icon-btn" title="Buscar dirección">🔍</button>
+        <input id="direccionInput" class="search-input" type="text" placeholder="Busca tu ciudad aquí...">
+        <button id="clearBtn" class="clear-btn" title="Limpiar búsqueda">✕</button>
       </div>
       <div class="radio-control">
-        <label class="radio-label">Radio:</label>
-        <input id="radioSlider" class="radio-slider" type="range" min="1" max="80" value="5" />
+        <span class="radio-label">Radio:</span>
+        <input id="radioSlider" class="radio-slider" type="range" min="1" max="30" step="1" value="5">
         <span id="radioValue" class="radio-value">5 km</span>
       </div>
-    </section>
-
-    <!-- Mapa -->
-    <div class="mapa-container">
-      <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
-      <div id="mapa"></div>
-      <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
     </div>
-
-    <!-- Listado -->
-    <section class="listado-container">
-      <div id="listado" class="listado">
-        <div class="loading">
-          <div class="loading-spinner"></div>
-          Iniciando aplicación…
-        </div>
-      </div>
-    </section>
-
-    <button id="ubicacionBtn" class="fab" title="Mi ubicación">📍</button>
+    <div class="mapa-container">
+      <div id="mapa"></div>
+      <div id="mapaInfo" class="mapa-info">📍 Iniciando aplicación…</div>
+      <button id="centrarBtn" class="map-center-btn" title="Centrar mapa">◎</button>
+    </div>
+    <div class="listado-container">
+      <div id="listado" class="listado"></div>
+    </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Footer/bottom fijo -->
+  <div class="footer-bottom">
+    <button id="ubicacionBtn" class="gps-btn" title="Usar ubicación GPS">📍 GPS</button>
+    <span id="actualizacionStamp" class="actualizacion-hora">Actualizado: --</span>
+  </div>
+
   <script src="app.js"></script>
+  <!-- Leaflet mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>

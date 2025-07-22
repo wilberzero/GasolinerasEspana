@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gasolineras España – Mejor precio</title>
-
-  <!-- Leaflet CSS desde CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Hoja de estilos local -->
-  <link rel="stylesheet" href="styles-corregido.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-container">
@@ -18,7 +15,7 @@
 
       <!-- Selector de combustible -->
       <div class="combustible-selector">
-        <button class="fuel-chip" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
+        <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">🏎️ 98</button>
         <button class="fuel-chip" data-fuel="Precio Gasoleo Premium">💎 Diésel+</button>
@@ -47,7 +44,6 @@
     <div class="mapa-container">
       <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
       <div id="mapa"></div>
-      <!-- Botón centrar movido a la derecha -->
       <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
     </div>
 
@@ -65,9 +61,7 @@
     <button id="ubicacionBtn" class="fab" title="Mi ubicación">📍</button>
   </div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Lógica de la app -->
-  <script src="app-corregido.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

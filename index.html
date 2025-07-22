@@ -2,17 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gasolineras España – Mejor precio</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-container">
-    <!-- Cabecera -->
     <header class="header">
       <h1 class="header-title">Gasolineras baratas cercanas</h1>
-      <!-- Filtros simplificados -->
       <div class="combustible-selector">
         <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
@@ -20,7 +18,6 @@
       </div>
     </header>
 
-    <!-- Controles de búsqueda CORREGIDOS -->
     <section class="search-controls">
       <div class="search-field">
         <button id="searchIconBtn" class="search-icon-btn" title="Buscar">🔍</button>
@@ -34,14 +31,12 @@
       </div>
     </section>
 
-    <!-- Mapa -->
     <div class="mapa-container">
       <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
       <div id="mapa"></div>
       <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
     </div>
 
-    <!-- Listado -->
     <section class="listado-container">
       <div id="listado" class="listado">
         <div class="loading">
@@ -50,6 +45,11 @@
         </div>
       </div>
     </section>
+
+    <!-- Barra fija de fecha y hora de actualización abajo -->
+    <footer class="footer-info">
+      <span id="fechaActualizacionTexto">Actualización: --</span>
+    </footer>
 
     <button id="ubicacionBtn" class="fab" title="Mi ubicación">📍</button>
   </div>

@@ -9,11 +9,9 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Encabezado simplificado -->
+    <!-- Cabecera compacta -->
     <header class="header">
       <h1 class="header-title">⛽ Gasolineras baratas cercanas</h1>
-
-      <!-- Selector de combustible -->
       <div class="combustible-selector">
         <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
@@ -32,7 +30,6 @@
         <button id="clearBtn" class="clear-btn" title="Borrar">✕</button>
         <button id="buscarBtn" class="search-btn">Buscar</button>
       </div>
-
       <div class="radio-control">
         <label class="radio-label">Radio:</label>
         <input id="radioSlider" class="radio-slider" type="range" min="1" max="80" value="5" />
@@ -40,14 +37,14 @@
       </div>
     </section>
 
-    <!-- Mapa -->
+    <!-- Mapa y botón centrar a la derecha -->
     <div class="mapa-container">
       <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
       <div id="mapa"></div>
       <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
     </div>
 
-    <!-- Listado sin header -->
+    <!-- Listado sin cabecera extra -->
     <section class="listado-container">
       <div id="listado" class="listado">
         <div class="loading">
@@ -57,7 +54,6 @@
       </div>
     </section>
 
-    <!-- Botón GPS flotante -->
     <button id="ubicacionBtn" class="fab" title="Mi ubicación">📍</button>
   </div>
 

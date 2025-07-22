@@ -9,16 +9,14 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Cabecera compacta -->
+    <!-- Cabecera simplificada -->
     <header class="header">
       <h1 class="header-title">⛽ Gasolineras baratas cercanas</h1>
+      <!-- FILTROS SIMPLIFICADOS: Solo Diésel, 95 y 98 -->
       <div class="combustible-selector">
         <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
         <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">🏎️ 98</button>
-        <button class="fuel-chip" data-fuel="Precio Gasoleo Premium">💎 Diésel+</button>
-        <button class="fuel-chip" data-fuel="Precio Biodiesel">🌱 Bio</button>
-        <button class="fuel-chip" data-fuel="Precio Bioetanol">🌿 E85</button>
       </div>
     </header>
 
@@ -37,14 +35,14 @@
       </div>
     </section>
 
-    <!-- Mapa y botón centrar a la derecha -->
+    <!-- Mapa con info corregida -->
     <div class="mapa-container">
       <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
       <div id="mapa"></div>
       <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
     </div>
 
-    <!-- Listado sin cabecera extra -->
+    <!-- Listado -->
     <section class="listado-container">
       <div id="listado" class="listado">
         <div class="loading">

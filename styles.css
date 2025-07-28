@@ -82,7 +82,7 @@ outline: none;
 box-shadow: 0 0 3px #fff5;
 }
 
-/* CONTROLES DE BÚSQUEDA CORREGIDOS */
+/* CONTROLES DE BÚSQUEDA */
 .search-controls {
 padding: 10px 10px 6px 10px;
 background: #fff;
@@ -97,7 +97,7 @@ margin-bottom: 10px;
 /* Input con padding corregido para evitar solapamientos */
 .search-input {
 width: 100%;
-padding: 12px 55px 12px 55px; /* CORREGIDO: más padding a ambos lados */
+padding: 12px 55px 12px 55px;
 border: 2px solid #e2e8f0;
 border-radius: 11px;
 background: #f8fafc;
@@ -117,12 +117,12 @@ color: #64748b;
 font-size: 0.98em;
 }
 
-/* BOTÓN LUPA CORREGIDO - Perfectamente centrado */
+/* BOTÓN LUPA */
 .search-icon-btn {
 position: absolute;
-left: 12px; /* CORREGIDO: más margen del borde */
+left: 12px;
 top: 50%;
-transform: translateY(-50%); /* CORREGIDO: centrado perfecto */
+transform: translateY(-50%);
 background: none;
 border: none;
 font-size: 1.2rem;
@@ -131,7 +131,7 @@ cursor: pointer;
 padding: 6px;
 border-radius: 6px;
 transition: all 0.2s ease;
-z-index: 10; /* AÑADIDO: z-index para evitar conflictos */
+z-index: 10;
 display: flex;
 align-items: center;
 justify-content: center;
@@ -141,17 +141,17 @@ height: 32px;
 
 .search-icon-btn:hover {
 background: rgba(26, 86, 219, 0.1);
-transform: translateY(-50%) scale(1.05); /* CORREGIDO: mantiene centrado al hacer hover */
+transform: translateY(-50%) scale(1.05);
 }
 
 .search-icon-btn:active {
 transform: translateY(-50%) scale(0.95);
 }
 
-/* BOTÓN X CORREGIDO - Sin solapamientos */
+/* BOTÓN X */
 .clear-btn {
 position: absolute;
-right: 15px; /* CORREGIDO: más separado del borde */
+right: 15px;
 top: 50%;
 transform: translateY(-50%);
 background: #ef4444;
@@ -160,13 +160,13 @@ border: none;
 width: 28px;
 height: 28px;
 border-radius: 50%;
-font-size: 0.85rem; /* CORREGIDO: tamaño ligeramente menor */
+font-size: 0.85rem;
 cursor: pointer;
 display: none;
 align-items: center;
 justify-content: center;
 transition: all 0.2s ease;
-z-index: 10; /* AÑADIDO: mismo z-index que la lupa */
+z-index: 10;
 }
 
 .clear-btn:hover {
@@ -189,7 +189,7 @@ gap: 10px;
 font-size: 1rem;
 color: #374151;
 font-weight: 500;
-cursor: pointer; /* AÑADIDO: cursor pointer para clics */
+cursor: pointer;
 }
 
 .radio-slider {
@@ -203,8 +203,8 @@ cursor: pointer;
 
 .radio-slider::-webkit-slider-thumb {
 appearance: none;
-width: 22px;  /* AUMENTADO: de 18px a 22px */
-height: 22px; /* AUMENTADO: de 18px a 22px */
+width: 22px;
+height: 22px;
 background: #1a56db;
 border-radius: 100%;
 cursor: pointer;
@@ -212,8 +212,8 @@ box-shadow: 0 2px 4px rgba(26, 86, 219, 0.3);
 }
 
 .radio-slider::-moz-range-thumb {
-width: 22px;  /* AUMENTADO: de 18px a 22px */
-height: 22px; /* AUMENTADO: de 18px a 22px */
+width: 22px;
+height: 22px;
 background: #1a56db;
 border-radius: 100%;
 cursor: pointer;
@@ -227,7 +227,7 @@ color: #1a56db;
 font-size: 1.01rem;
 min-width: 47px;
 text-align: center;
-cursor: pointer; /* AÑADIDO: cursor pointer para clics */
+cursor: pointer;
 }
 
 /* Mapa */
@@ -325,11 +325,12 @@ overflow-y: auto;
 padding: 8px 2px;
 }
 
+/* LISTADO MÁS COMPACTO */
 .gasolinera-card {
 border: 1px solid #e2e8f0;
 border-radius: 8px;
-padding: 12px;
-margin-bottom: 8px;
+padding: 8px 12px; /* REDUCIDO: de 12px a 8px vertical */
+margin-bottom: 6px; /* REDUCIDO: de 8px a 6px */
 cursor: pointer;
 transition: box-shadow .14s;
 }
@@ -368,7 +369,7 @@ box-shadow: 0 2px 12px #1a56db25;
 display: flex;
 justify-content: space-between;
 align-items: flex-start;
-margin-bottom: 6px;
+margin-bottom: 4px; /* REDUCIDO: de 6px a 4px */
 }
 
 .gasolinera-nombre {
@@ -380,13 +381,23 @@ font-size: 1.06rem;
 .gasolinera-info {
 font-size: 0.98rem;
 color: #64748b;
-margin-bottom: 8px;
+margin-bottom: 4px; /* REDUCIDO: de 8px a 4px */
+}
+
+/* Estilo para el horario de las gasolineras */
+.gasolinera-horario {
+font-size: 0.85rem; /* REDUCIDO: de 0.9rem a 0.85rem */
+color: #64748b;
+margin-bottom: 4px; /* REDUCIDO: de 8px a 4px */
+font-style: italic;
+line-height: 1.2; /* AÑADIDO: interlineado compacto */
 }
 
 .gasolinera-acciones {
 display: flex;
 justify-content: space-between;
 align-items: center;
+margin-top: 2px; /* AÑADIDO: espaciado mínimo */
 }
 
 .gasolinera-distancia {
@@ -468,6 +479,7 @@ to { transform: rotate(360deg); }
 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 
+/* CORREGIDO: Marcadores del mapa más anchos para títulos completos */
 .marker-container {
 display: flex;
 flex-direction: column;
@@ -475,10 +487,10 @@ align-items: center;
 justify-content: center;
 border-radius: 6px;
 border: 2px solid #fff;
-padding: 2px 5px;
+padding: 2px 8px; /* AUMENTADO: de 5px a 8px */
 box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-min-width: unset;
-max-width: 90px;
+min-width: 110px; /* AUMENTADO: de unset a 110px */
+max-width: 130px; /* AUMENTADO: de 90px a 130px */
 width: fit-content;
 }
 
@@ -508,7 +520,7 @@ font-size: 0.75rem;
 font-weight: 700;
 white-space: nowrap;
 text-align: center;
-max-width: 80px;
+max-width: 120px; /* AUMENTADO: de 80px a 120px */
 overflow: hidden;
 text-overflow: ellipsis;
 }
@@ -525,37 +537,3 @@ font-size: 0.7rem;
 .header-title { font-size: 1.1rem; }
 .fuel-chip { font-size: 0.85rem; min-width: 65px; }
 }
-
-/* Estilo para el horario de las gasolineras */
-.gasolinera-horario {
-    font-size: 0.9rem;
-    color: #64748b;
-    margin-bottom: 8px;
-    font-style: italic;
-}
-
-.marker-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    border: 2px solid #fff;
-    padding: 2px 8px; /* AUMENTADO: de 5px a 8px */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    min-width: 110px; /* AUMENTADO: de unset a 110px */
-    max-width: 130px; /* AUMENTADO: de 90px a 130px */
-    width: fit-content;
-}
-
-.marker-brand, .marker-price {
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    white-space: nowrap;
-    text-align: center;
-    max-width: 120px; /* AUMENTADO: de 80px a 120px */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-

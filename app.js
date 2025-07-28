@@ -472,6 +472,26 @@ class GasolinerasApp {
         return sorted[lower] * (1 - weight) + sorted[upper] * weight;
     }
 
+    // FUNCIÓN FORMATEAR HORARIO: Nueva función para limpiar el texto del horario
+    formatearHorario(horario) {
+        if (!horario || horario.trim() === '') return 'No disponible';
+        
+        // Limpiar el horario de caracteres especiales y normalizar
+        let horarioLimpio = horario
+            .replace(/L-D\s*/g, 'L-D: ')  // Normalizar L-D
+            .replace(/L-V\s*/g, 'L-V: ')  // Normalizar L-V
+            .replace(/S-D\s*/g, 'S-D: ')  // Normalizar S-D
+            .replace(/\s+/g, ' ')         // Espacios múltiples a uno solo
+            .trim();
+
+        // Si es muy largo, truncar y añadir "..."
+        if (horarioLimpio.length > 50) {
+            horarioLimpio = horarioLimpio.substring(0, 47) + '...';
+        }
+
+        return horarioLimpio;
+    }
+
     actualizarListado(estaciones) {
         const listado = document.getElementById('listado');
         if (!listado) return;
@@ -484,6 +504,8 @@ class GasolinerasApp {
         const precios = estaciones.map(e => e.precio);
         listado.innerHTML = estaciones.map(e => {
             const clase = this.obtenerClasePrecio(e.precio, precios);
+            const horarioFormateado = this.formatearHorario(e.horario);
+            
             return `
                 <div class="gasolinera-card ${clase}" data-id="${e.id}">
                     <div class="gasolinera-header">
@@ -491,6 +513,7 @@ class GasolinerasApp {
                         <div class="precio-badge ${clase}">${e.precio.toFixed(3)}€</div>
                     </div>
                     <div class="gasolinera-info">${e.direccion}, ${e.municipio}</div>
+                    <div class="gasolinera-horario">🕒 ${horarioFormateado}</div>
                     <div class="gasolinera-acciones">
                         <div class="gasolinera-distancia">${e.distancia.toFixed(1)} km</div>
                         <button class="ruta-btn" onclick="window.open('https://www.google.com/maps/dir/${this.ubicacion.lat},${this.ubicacion.lng}/${e.lat},${e.lng}')">Ruta</button>
@@ -549,7 +572,8 @@ class GasolinerasApp {
             marker.bindPopup(`
                 <strong>${e.nombre}</strong><br>
                 ${e.direccion}<br>
-                <strong>${e.precio.toFixed(3)}€</strong> - ${e.distancia.toFixed(1)} km
+                <strong>${e.precio.toFixed(3)}€</strong> - ${e.distancia.toFixed(1)} km<br>
+                🕒 ${this.formatearHorario(e.horario)}
             `);
 
             marker.on('click', () => this.seleccionarEstacion(e));

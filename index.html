@@ -1,60 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gasolineras España – Mejor precio</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gasolineras App</title>
+<link rel="stylesheet" href="styles.css" />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-sA+ePIB0pMZ0bMsubb+3ylU6J5VHSO72xZ2hmF6z9kA="
+  crossorigin=""
+/>
 </head>
 <body>
   <div class="app-container">
-    <!-- Cabecera -->
     <header class="header">
-      <h1 class="header-title">Gasolineras baratas cercanas</h1>
-      <!-- Filtros simplificados -->
-      <div class="combustible-selector">
-        <button class="fuel-chip active" data-fuel="Precio Gasoleo A">⛽ Diésel</button>
-        <button class="fuel-chip" data-fuel="Precio Gasolina 95 E5">🚗 95</button>
-        <button class="fuel-chip" data-fuel="Precio Gasolina 98 E5">🏎️ 98</button>
+      <h1 class="header-title">Busca Gasolineras Baratas</h1>
+
+      <div class="combustible-selector" role="list" aria-label="Seleccionar tipo de combustible">
+        <button type="button" class="fuel-chip active" data-fuel="Precio Gasoleo A" role="listitem" aria-pressed="true">Gasóleo A</button>
+        <button type="button" class="fuel-chip" data-fuel="Precio Gasolina 95" role="listitem" aria-pressed="false">Gasolina 95</button>
+        <button type="button" class="fuel-chip" data-fuel="Precio Gasolina 98" role="listitem" aria-pressed="false">Gasolina 98</button>
+        <!-- Añade más si quieres -->
       </div>
     </header>
 
-    <!-- Controles de búsqueda CORREGIDOS -->
     <section class="search-controls">
       <div class="search-field">
-        <button id="searchIconBtn" class="search-icon-btn" title="Buscar">🔍</button>
-        <input id="direccionInput" class="search-input" placeholder="Buscar dirección o ciudad…" />
-        <button id="clearBtn" class="clear-btn" title="Borrar">✕</button>
+        <input id="direccionInput" class="search-input" type="search" placeholder="Buscar dirección o ciudad" aria-label="Buscar dirección o ciudad" />
+        <button id="searchIconBtn" class="search-icon-btn" aria-label="Buscar"><span>🔍</span></button>
+        <button id="clearBtn" class="clear-btn" aria-label="Limpiar búsqueda" title="Limpiar búsqueda">×</button>
       </div>
-      <div class="radio-control">
-        <label class="radio-label">Radio:</label>
-        <input id="radioSlider" class="radio-slider" type="range" min="1" max="80" value="5" />
-        <span id="radioValue" class="radio-value">5 km</span>
+      
+      <div class="radio-control" aria-label="Control de radio para búsqueda">
+        <span id="radioLabel" class="radio-label" tabindex="0" role="button" aria-pressed="false" title="Disminuir radio">Radio</span>
+        <input id="radioSlider" type="range" min="1" max="100" step="1" class="radio-slider" aria-valuemin="1" aria-valuemax="100" aria-valuenow="5" aria-label="Selector de radio en kilómetros" />
+        <span id="radioValue" class="radio-value" tabindex="0" role="button" aria-pressed="false" title="Aumentar radio">5 km</span>
       </div>
     </section>
 
-    <!-- Mapa -->
-    <div class="mapa-container">
-      <div id="mapaInfo" class="mapa-info">📍 Obteniendo tu ubicación…</div>
+    <section class="mapa-container" aria-label="Mapa de gasolineras">
       <div id="mapa"></div>
-      <button id="centrarBtn" class="map-center-btn" title="Centrar en mi ubicación">📍</button>
-    </div>
-
-    <!-- Listado -->
-    <section class="listado-container">
-      <div id="listado" class="listado">
-        <div class="loading">
-          <div class="loading-spinner"></div>
-          Iniciando aplicación…
-        </div>
-      </div>
+      <div id="mapaInfo" class="mapa-info" aria-live="polite" aria-atomic="true">Iniciando mapa...</div>
+      <button id="centrarBtn" class="map-center-btn" title="Centrar mapa en ubicación actual" aria-label="Centrar mapa en ubicación actual">📍</button>
     </section>
 
-    <button id="ubicacionBtn" class="fab" title="Mi ubicación">📍</button>
+    <aside class="listado-container" aria-label="Listado de gasolineras">
+      <div id="listado" class="listado">
+        <!-- Aquí irán las tarjetas de las gasolineras -->
+      </div>
+    </aside>
+
+    <button id="ubicacionBtn" class="fab" title="Obtener ubicación GPS" aria-label="Obtener ubicación GPS">📡</button>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-oja9b6NK+BS9BuDrpct9eNKVzL+l3PpqL7t5ZoM6tk8="
+    crossorigin=""></script>
   <script src="app.js"></script>
 </body>
 </html>

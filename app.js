@@ -43,28 +43,70 @@ class GasolinerasApp {
         }).addTo(this.mapa);
         this.mapa.zoomControl.setPosition('bottomleft');
         
-        // AÑADIDO: Manejo de zoom para ocultar gasolineras caras
+        // MODIFICADO: Manejo de zoom para mostrar solo verdes con transparencia
         this.mapa.on('zoomend', () => {
             const zoom = this.mapa.getZoom();
+            
             this.marcadores.forEach(marker => {
                 let show = true;
-                // Ocultar caros y muy caros con zoom bajo
+                let applyTransparency = false;
+                
                 if (zoom < 13) {
-                    if (marker.options?.className?.includes('muy-caro') || marker.options?.className?.includes('caro')) {
-                        show = false;
+                    // Solo mostrar muy-barato (verde oscuro) y barato (verde claro)
+                    if (marker.options?.className?.includes('muy-barato')) {
+                        show = true; // Verde oscuro - mostrar normal
+                        applyTransparency = false;
+                    } else if (marker.options?.className?.includes('barato')) {
+                        show = true; // Verde claro - mostrar con transparencia
+                        applyTransparency = true;
+                    } else {
+                        show = false; // Ocultar todos los demás colores
                     }
-                    if (marker.options?.className?.includes('medio')) {
-                        // Mostrar la mitad de los medios solo
-                        if (!marker.selected) {
-                            show = Math.random() < 0.5;
-                        }
-                    }
+                } else {
+                    // Con zoom alto, mostrar todos normalmente
+                    show = true;  
+                    applyTransparency = false;
                 }
-                if (marker.selected) show = true; // No ocultar si esta seleccionado
+                
+                // No ocultar si está seleccionado
+                if (marker.selected) {
+                    show = true;
+                    applyTransparency = false;
+                }
+                
+                // Aplicar visibilidad
                 if (show) {
                     if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
+                    
+                    // Aplicar o quitar transparencia
+                    const markerElement = marker.getElement();
+                    if (markerElement) {
+                        if (applyTransparency) {
+                            markerElement.classList.add('zoom-out-transparent');
+                        } else {
+                            markerElement.classList.remove('zoom-out-transparent');
+                        }
+                    }
                 } else {
                     if (this.mapa.hasLayer(marker)) this.mapa.removeLayer(marker);
+                }
+            });
+            
+            // También aplicar transparencia a las tarjetas del listado
+            document.querySelectorAll('.gasolinera-card').forEach(card => {
+                if (zoom < 13) {
+                    if (card.classList.contains('barato')) {
+                        card.classList.add('zoom-out-transparent');
+                    } else if (card.classList.contains('muy-barato')) {
+                        card.classList.remove('zoom-out-transparent');
+                    } else {
+                        // Ocultar tarjetas que no son verdes
+                        card.style.display = 'none';
+                    }
+                } else {
+                    // Restaurar todas las tarjetas
+                    card.classList.remove('zoom-out-transparent');
+                    card.style.display = 'block';
                 }
             });
         });

@@ -44,18 +44,18 @@ class GasolinerasApp {
         }).addTo(this.mapa);
         this.mapa.zoomControl.setPosition('bottomleft');
         
-        // CORREGIDO: Manejo de zoom para mostrar solo verdes con transparencia
+        // CORREGIDO: Solo afecta a marcadores del mapa, NO al listado
         this.mapa.on('zoomend', () => {
             this.currentZoom = this.mapa.getZoom();
-            this.aplicarFiltrosZoom();
+            this.aplicarFiltrosZoomMapa();
         });
     }
 
-    // NUEVA FUNCIÓN: Aplicar filtros de zoom separadamente
-    aplicarFiltrosZoom() {
+    // CORREGIDO: Solo aplicar filtros a marcadores del mapa
+    aplicarFiltrosZoomMapa() {
         const zoom = this.currentZoom;
         
-        // Aplicar filtros a marcadores
+        // Solo aplicar filtros a marcadores del mapa
         this.marcadores.forEach(marker => {
             let show = true;
             let applyTransparency = false;
@@ -98,33 +98,6 @@ class GasolinerasApp {
                 }
             } else {
                 if (this.mapa.hasLayer(marker)) this.mapa.removeLayer(marker);
-            }
-        });
-        
-        // CORREGIDO: Aplicar filtros a las tarjetas del listado
-        this.aplicarFiltrosListado();
-    }
-
-    // NUEVA FUNCIÓN: Aplicar filtros al listado
-    aplicarFiltrosListado() {
-        const zoom = this.currentZoom;
-        
-        document.querySelectorAll('.gasolinera-card').forEach(card => {
-            if (zoom < 13) {
-                if (card.classList.contains('barato')) {
-                    card.style.opacity = '0.5';
-                    card.style.display = 'block';
-                } else if (card.classList.contains('muy-barato')) {
-                    card.style.opacity = '1';
-                    card.style.display = 'block';
-                } else {
-                    // Ocultar tarjetas que no son verdes
-                    card.style.display = 'none';
-                }
-            } else {
-                // Restaurar todas las tarjetas
-                card.style.opacity = '1';
-                card.style.display = 'block';
             }
         });
     }
@@ -463,8 +436,8 @@ class GasolinerasApp {
         this.actualizarMapa(estaciones);
         this.setInfo(`⛽ ${estaciones.length} gasolineras encontradas en ${this.radio}km`);
         
-        // AÑADIDO: Aplicar filtros después de actualizar listado y mapa
-        setTimeout(() => this.aplicarFiltrosZoom(), 100);
+        // AÑADIDO: Aplicar filtros solo al mapa después de actualizar
+        setTimeout(() => this.aplicarFiltrosZoomMapa(), 100);
     }
 
     calcularDistancia(lat1, lng1, lat2, lng2) {

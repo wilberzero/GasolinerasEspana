@@ -16,7 +16,8 @@ class GasolinerasApp {
         };
         this.keys = { fuel: 'fuel_pref', radio: 'radio_pref', loc: 'loc_prev' };
         this.inicializacionTimeout = null;
-        this.currentZoom = 13; // AÑADIDO: trackear zoom actual
+        this.currentZoom = 13;
+        this.estacionesActuales = []; // AÑADIDO: Para guardar las estaciones actuales
         this.init();
     }
 
@@ -44,62 +45,77 @@ class GasolinerasApp {
         }).addTo(this.mapa);
         this.mapa.zoomControl.setPosition('bottomleft');
         
-        // CORREGIDO: Solo afecta a marcadores del mapa, NO al listado
+        // CORREGIDO: Nueva lógica de transparencia para las 5 mejores
         this.mapa.on('zoomend', () => {
             this.currentZoom = this.mapa.getZoom();
             this.aplicarFiltrosZoomMapa();
         });
     }
 
-    // CORREGIDO: Solo aplicar filtros a marcadores del mapa
+    // CORREGIDO: Mostrar solo las 5 mejores (más baratas y cercanas)
     aplicarFiltrosZoomMapa() {
         const zoom = this.currentZoom;
         
-        // Solo aplicar filtros a marcadores del mapa
-        this.marcadores.forEach(marker => {
-            let show = true;
-            let applyTransparency = false;
+        if (zoom < 13) {
+            // Calcular las 5 mejores estaciones (precio + distancia)
+            const mejoresEstaciones = this.calcularMejoresEstaciones();
             
-            if (zoom < 13) {
-                // Solo mostrar muy-barato (verde oscuro) y barato (verde claro)
-                if (marker.options?.className?.includes('muy-barato')) {
-                    show = true; // Verde oscuro - mostrar normal
-                    applyTransparency = false;
-                } else if (marker.options?.className?.includes('barato')) {
-                    show = true; // Verde claro - mostrar con transparencia
-                    applyTransparency = true;
-                } else {
-                    show = false; // Ocultar todos los demás colores
-                }
-            } else {
-                // Con zoom alto, mostrar todos normalmente
-                show = true;  
-                applyTransparency = false;
-            }
-            
-            // No ocultar si está seleccionado
-            if (marker.selected) {
-                show = true;
-                applyTransparency = false;
-            }
-            
-            // Aplicar visibilidad
-            if (show) {
-                if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
+            this.marcadores.forEach(marker => {
+                const esMejor = mejoresEstaciones.some(est => 
+                    marker.options.title === est.nombre
+                );
+                const estaSeleccionado = marker.selected;
                 
-                // Aplicar o quitar transparencia
-                const markerElement = marker.getElement();
-                if (markerElement) {
-                    if (applyTransparency) {
-                        markerElement.style.opacity = '0.5';
-                    } else {
-                        markerElement.style.opacity = '1';
-                    }
+                if (esMejor || estaSeleccionado) {
+                    // Mostrar normal las 5 mejores y las seleccionadas
+                    if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
+                    const markerElement = marker.getElement();
+                    if (markerElement) markerElement.style.opacity = '1';
+                } else {
+                    // Mostrar transparente las demás
+                    if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
+                    const markerElement = marker.getElement();
+                    if (markerElement) markerElement.style.opacity = '0.3';
                 }
-            } else {
-                if (this.mapa.hasLayer(marker)) this.mapa.removeLayer(marker);
-            }
+            });
+        } else {
+            // Con zoom alto, mostrar todos normalmente
+            this.marcadores.forEach(marker => {
+                if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
+                const markerElement = marker.getElement();
+                if (markerElement) markerElement.style.opacity = '1';
+            });
+        }
+    }
+
+    // NUEVA FUNCIÓN: Calcular las 5 mejores estaciones
+    calcularMejoresEstaciones() {
+        if (!this.estacionesActuales.length) return [];
+        
+        // Crear puntuación combinada: 70% precio + 30% distancia
+        const estacionesConPuntuacion = this.estacionesActuales.map(est => {
+            // Normalizar precio (invertido: menor precio = mejor puntuación)
+            const precioMin = Math.min(...this.estacionesActuales.map(e => e.precio));
+            const precioMax = Math.max(...this.estacionesActuales.map(e => e.precio));
+            const precioPuntuacion = precioMax > precioMin ? 
+                (precioMax - est.precio) / (precioMax - precioMin) : 1;
+            
+            // Normalizar distancia (invertido: menor distancia = mejor puntuación)
+            const distMin = Math.min(...this.estacionesActuales.map(e => e.distancia));
+            const distMax = Math.max(...this.estacionesActuales.map(e => e.distancia));
+            const distPuntuacion = distMax > distMin ? 
+                (distMax - est.distancia) / (distMax - distMin) : 1;
+            
+            // Puntuación combinada
+            const puntuacionTotal = (precioPuntuacion * 0.7) + (distPuntuacion * 0.3);
+            
+            return { ...est, puntuacion: puntuacionTotal };
         });
+        
+        // Ordenar por puntuación descendente y tomar las 5 mejores
+        return estacionesConPuntuacion
+            .sort((a, b) => b.puntuacion - a.puntuacion)
+            .slice(0, 5);
     }
 
     cargarPreferencias() {
@@ -139,7 +155,7 @@ class GasolinerasApp {
                 if (this.cache.data) this.procesar(this.cache.data);
             }));
 
-            // CORREGIDO: Evento click para texto Radio para decrecer radio
+            // Evento click para texto Radio para decrecer radio
             const radioLabel = document.querySelector('.radio-label');
             const radioValue = document.querySelector('.radio-value');
             if (radioLabel) {
@@ -153,10 +169,9 @@ class GasolinerasApp {
                     }
                 });
             }
-            // CORREGIDO: Evento click para aumentar radio (sin límite artificial)
             if (radioValue) {
                 radioValue.addEventListener('click', () => {
-                    if (this.radio < 25) { // CORREGIDO: respeta el máximo del slider
+                    if (this.radio < 25) {
                         this.radio += 1;
                         document.getElementById('radioSlider').value = this.radio;
                         document.getElementById('radioValue').textContent = `${this.radio} km`;
@@ -432,11 +447,14 @@ class GasolinerasApp {
             .filter(Boolean)
             .sort((a, b) => a.precio - b.precio);
 
+        // AÑADIDO: Guardar estaciones actuales para cálculos
+        this.estacionesActuales = estaciones;
+
         this.actualizarListado(estaciones);
         this.actualizarMapa(estaciones);
         this.setInfo(`⛽ ${estaciones.length} gasolineras encontradas en ${this.radio}km`);
         
-        // AÑADIDO: Aplicar filtros solo al mapa después de actualizar
+        // Aplicar filtros solo al mapa después de actualizar
         setTimeout(() => this.aplicarFiltrosZoomMapa(), 100);
     }
 
@@ -472,19 +490,16 @@ class GasolinerasApp {
         return sorted[lower] * (1 - weight) + sorted[upper] * weight;
     }
 
-    // FUNCIÓN FORMATEAR HORARIO: Nueva función para limpiar el texto del horario
     formatearHorario(horario) {
         if (!horario || horario.trim() === '') return 'No disponible';
         
-        // Limpiar el horario de caracteres especiales y normalizar
         let horarioLimpio = horario
-            .replace(/L-D\s*/g, 'L-D: ')  // Normalizar L-D
-            .replace(/L-V\s*/g, 'L-V: ')  // Normalizar L-V
-            .replace(/S-D\s*/g, 'S-D: ')  // Normalizar S-D
-            .replace(/\s+/g, ' ')         // Espacios múltiples a uno solo
+            .replace(/L-D\s*/g, 'L-D: ')
+            .replace(/L-V\s*/g, 'L-V: ')
+            .replace(/S-D\s*/g, 'S-D: ')
+            .replace(/\s+/g, ' ')
             .trim();
 
-        // Si es muy largo, truncar y añadir "..."
         if (horarioLimpio.length > 50) {
             horarioLimpio = horarioLimpio.substring(0, 47) + '...';
         }
@@ -537,7 +552,6 @@ class GasolinerasApp {
         document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
         document.querySelector(`[data-id="${estacion.id}"]`).classList.add('selected');
         
-        // Marcar estación como seleccionada en el marcador
         this.marcadores.forEach(marker => {
             marker.selected = (marker.options.title === estacion.nombre);
         });
@@ -559,11 +573,11 @@ class GasolinerasApp {
                 icon: L.divIcon({
                     className: `mapa-marker ${clase}`,
                     html: `<div class="marker-container ${clase}">
-                        <div class="marker-brand">${e.nombre.substring(0, 8)}</div>
+                        <div class="marker-brand">${e.nombre.substring(0, 12)}</div>
                         <div class="marker-price">${e.precio.toFixed(3)}€</div>
                     </div>`,
-                    iconSize: [90, 40],
-                    iconAnchor: [45, 40]
+                    iconSize: [130, 40], // AUMENTADO: de [90, 40] a [130, 40]
+                    iconAnchor: [65, 40]  // AJUSTADO: de [45, 40] a [65, 40]
                 }),
                 title: e.nombre,
                 className: clase

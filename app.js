@@ -107,7 +107,7 @@ class GasolinerasApp {
                 if (this.cache.data) this.procesar(this.cache.data);
             }));
 
-            // AÑADIDO: Evento click para texto Radio para decrecer radio
+            // CORREGIDO: Evento click para texto Radio para decrecer radio
             const radioLabel = document.querySelector('.radio-label');
             const radioValue = document.querySelector('.radio-value');
             if (radioLabel) {
@@ -121,13 +121,16 @@ class GasolinerasApp {
                     }
                 });
             }
+            // CORREGIDO: Evento click para aumentar radio (sin límite artificial)
             if (radioValue) {
                 radioValue.addEventListener('click', () => {
-                    this.radio += 1;
-                    document.getElementById('radioSlider').value = this.radio;
-                    document.getElementById('radioValue').textContent = `${this.radio} km`;
-                    this.guardarPreferencias();
-                    if (this.cache.data && this.ubicacion) this.procesar(this.cache.data);
+                    if (this.radio < 25) { // CORREGIDO: respeta el máximo del slider
+                        this.radio += 1;
+                        document.getElementById('radioSlider').value = this.radio;
+                        document.getElementById('radioValue').textContent = `${this.radio} km`;
+                        this.guardarPreferencias();
+                        if (this.cache.data && this.ubicacion) this.procesar(this.cache.data);
+                    }
                 });
             }
 

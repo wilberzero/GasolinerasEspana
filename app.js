@@ -627,164 +627,91 @@ class GasolinerasApp {
 
     obtenerLogoSVG(nombre) {
         const n = nombre.toUpperCase();
+        let key = '';
+        let ext = 'ico';
+
+        if (n.includes('REPSOL')) { key = 'repsol'; ext = 'svg'; }
+        else if (n.includes('CEPSA')) key = 'cepsa';
+        else if (n.includes('BP') || n.includes('BRITISH PETROLEUM')) key = 'bp';
+        else if (n.includes('GALP')) key = 'galp';
+        else if (n.includes('SHELL')) { key = 'shell'; ext = 'ico'; } // we have shell.ico
+        else if (n.includes('PLENOIL')) key = 'plenoil';
+        else if (n.includes('BALLENOIL')) key = 'ballenoil';
+        else if (n.includes('PETROPRIX')) key = 'petroprix';
+        else if (n.includes('AVIA')) key = 'avia';
+        else if (n.includes('Q8')) key = 'q8';
+        else if (n.includes('CAMPSA')) key = 'campsa';
+        else if (n.includes('PETRONOR')) key = 'petronor';
+        else if (n.includes('BONAREA')) key = 'bonarea';
+        else if (n.includes('VALCARCE')) key = 'valcarce';
+        else if (n.includes('CARREFOUR')) { key = 'carrefour'; ext = 'svg'; }
+        else if (n.includes('ALCAMPO')) { key = 'alcampo'; ext = 'ico'; } // we have alcampo.ico which is perfect!
+        else if (n.includes('EROSKI')) key = 'eroski';
+        else if (n.includes('MEROIL')) key = 'meroil';
+        else if (n.includes('DISA')) key = 'disa';
+        else if (n.includes('TAMOIL')) key = 'tamoil';
+        else if (n.includes('ESCLAT') || n.includes('BONPREU')) key = 'esclat';
+        else if (n.includes('SARAS')) key = 'saras';
+
+        // Custom inline SVGs as bulletproof fallback if image loading fails
+        let fallbackSVG = '';
         
         if (n.includes('REPSOL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <ellipse cx="12" cy="6.5" rx="8.5" ry="3.5" fill="#FF4E00" />
-                <ellipse cx="12" cy="11.5" rx="9" ry="4" fill="#FFB800" />
-                <ellipse cx="12" cy="17" rx="8.5" ry="3.5" fill="#002A54" />
-            </svg>`;
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><ellipse cx="12" cy="6.5" rx="8.5" ry="3.5" fill="#FF4E00" /><ellipse cx="12" cy="11.5" rx="9" ry="4" fill="#FFB800" /><ellipse cx="12" cy="17" rx="8.5" ry="3.5" fill="#002A54" /></svg>`;
+        } else if (n.includes('CEPSA')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#E30613" /><path d="M7 12a5 5 0 0 1 8-4M17 12a5 5 0 0 1-8 4" stroke="#FFF" stroke-width="3" fill="none" stroke-linecap="round" /></svg>`;
+        } else if (n.includes('BP') || n.includes('BRITISH PETROLEUM')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00853F" /><path d="M12 3 L13.5 8 L18.5 6.5 L15.5 10.5 L20.5 12 L15.5 13.5 L18.5 17.5 L13.5 16 L12 21 L10.5 16 L5.5 17.5 L8.5 13.5 L3.5 12 L8.5 10.5 L5.5 6.5 L10.5 8 Z" fill="#FFD100" /><circle cx="12" cy="12" r="4.5" fill="#FFFFFF" /><circle cx="12" cy="12" r="2.5" fill="#00853F" /></svg>`;
+        } else if (n.includes('GALP')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FF6600" /><path d="M12 4a8 8 0 0 1 8 8c0 4.4-3.6 8-8 8s-8-3.6-8-8c0-2 1-4 3-5.5S10 4 12 4z" fill="#FFF" opacity="0.85"/><circle cx="12" cy="12" r="3.5" fill="#FF6600" /></svg>`;
+        } else if (n.includes('SHELL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FFD500" /><path d="M12 4.5C9.5 4.5 7 6.5 7 10c0 2.5 1.5 5 3 6l-0.8 1.5h5.6L14 16c1.5-1 3-3.5 3-6 0-3.5-2.5-5.5-5-5.5z" fill="#E30613" /><path d="M12 6.2c-1.5 0-3 1.2-3 3.8 0 1.8 1 3.5 2.2 4.2l-0.4 1h2.4l-0.4-1c1.2-.7 2.2-2.4 2.2-4.2 0-2.6-1.5-3.8-3-3.8z" fill="#FFD500" /></svg>`;
+        } else if (n.includes('PLENOIL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#002D62" /><path d="M12 4.5s5 4 5 8a5 5 0 0 1-10 0c0-4 5-8 5-8z" fill="#FF6600" /><path d="M12 6s3 2.5 3 6a3 3 0 0 1-6 0c0-3.5 3-6 3-6z" fill="#FFF" opacity="0.35" /></svg>`;
+        } else if (n.includes('BALLENOIL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00529B" /><path d="M5 12c0-3.5 3-6.5 7-6.5s7 3 7 6.5c0 2-1.5 3.5-3.5 3.5-.8 0-1.5-.3-2-.7l-.5.7h-2l-.5-.7c-.5.4-1.2.7-2 .7-2 0-3.5-1.5-3.5-3.5z" fill="#FFF" /><circle cx="12" cy="12" r="2" fill="#00529B" /></svg>`;
+        } else if (n.includes('PETROPRIX')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#0099FF" /><path d="M8 7h5a3.5 3.5 0 0 1 0 7H10v4H8V7zm2 2v3h3a1.5 1.5 0 1 0 0-3H10z" fill="#FFF" /><circle cx="15.5" cy="15.5" r="3.5" fill="#00CC66" /></svg>`;
+        } else if (n.includes('AVIA')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#E30613" /><path d="M12 5.5 L17.5 16.5 L6.5 16.5 Z" fill="#FFF" /><circle cx="12" cy="12.5" r="2.5" fill="#E30613" /></svg>`;
+        } else if (n.includes('Q8')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FF8000" /><path d="M12 6a5 5 0 1 0 3 9l2 2v-1a5 5 0 0 0-5-10zm0 2a3 3 0 1 1-3 3 3 3 0 0 1 3-3z" fill="#FFF" /><path d="M15 15l2 2" stroke="#FFF" stroke-width="2" stroke-linecap="round" /></svg>`;
+        } else if (n.includes('CAMPSA')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#002D62" /><path d="M6 7h12v2H6V7zm0 4h12v2H6v-2zm0 4h12v2H6v-2z" fill="#FFD100" /><path d="M9 5h6v14H9V5z" fill="#E30613" /></svg>`;
+        } else if (n.includes('PETRONOR')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#006633" /><path d="M6 8 L18 8 L12 18 Z" fill="#FFF" /><path d="M8 9 L16 9 L12 16 Z" fill="#E30613" /></svg>`;
+        } else if (n.includes('BONAREA')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00A2E8" /><path d="M8 8a4 4 0 0 1 8 0v8a4 4 0 0 1-8 0V8z" fill="#FFF" /><circle cx="12" cy="12" r="2.5" fill="#3F48CC" /></svg>`;
+        } else if (n.includes('VALCARCE')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#1A1A1A" /><path d="M12 4.5 L19.5 12 L12 19.5 L4.5 12 Z" fill="#E30613" /><circle cx="12" cy="12" r="3.5" fill="#FFF" /></svg>`;
+        } else if (n.includes('CARREFOUR')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#0056B3" /><path d="M12 6a6 6 0 0 0-6 6c0 3.3 2.7 6 6 6l-2-6 2-6z" fill="#E30613" /><path d="M12 6c3.3 0 6 2.7 6 6 0 3.3-2.7 6-6 6l2-6-2-6z" fill="#FFF" /></svg>`;
+        } else if (n.includes('ALCAMPO')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#E30613" /><path d="M7 14c1.5-2 4-5 6-5s3 2 3 3-1 3-3 3-4-1-6-1z" fill="#FFF" /><circle cx="15" cy="11" r="2" fill="#E30613" /></svg>`;
+        } else if (n.includes('EROSKI')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#E30613" /><circle cx="12" cy="12" r="5" fill="#FFF" /><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="#0056B3" /></svg>`;
+        } else if (n.includes('MEROIL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00529B" /><path d="M7 17 V7 L12 12 L17 7 V17" stroke="#00CC66" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>`;
+        } else if (n.includes('DISA')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FFCC00" /><path d="M12 12c1.5-1.5 3-1 3 1s-1.5 2-3 0c-1.5 2-3 0-3-0s1.5-2.5 3-1z" fill="#E30613" /><circle cx="12" cy="12" r="1.5" fill="#FFF" /></svg>`;
+        } else if (n.includes('TAMOIL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FFF" stroke="#E30613" stroke-width="1" /><circle cx="12" cy="12" r="7" fill="#00529B" /><path d="M8 12 L16 12" stroke="#FFF" stroke-width="2" /></svg>`;
+        } else if (n.includes('ESCLAT') || n.includes('BONPREU')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FF6600" /><path d="M6 12a6 6 0 0 1 12 0c0 3.3-6 8-6 8s-6-4.7-6-8z" fill="#002D62" /><circle cx="12" cy="12" r="2" fill="#FFF" /></svg>`;
+        } else if (n.includes('SARAS')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00529B" /><path d="M6 12 A6 6 0 0 1 18 12 Z" fill="#FF6600" /></svg>`;
+        } else {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#475569" /><path d="M8.5 7.5h5c.8 0 1.5.7 1.5 1.5v7.5H8.5V7.5zm7.5 3.8c0-1.1-.8-1.9-1.9-1.9H13v6c0 .4.4.8.8.8s.8-.4.8-.8v-3h.8v2.2c0 .4.4.8.8.8s.8-.4.8-.8v-3.8zm-5-2.2H9.8v1.5h1.2V9.1zm0 3H9.8v1.5h1.2v-1.5z" fill="#FFF" /></svg>`;
         }
-        if (n.includes('CEPSA')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#E30613" />
-                <path d="M7 12a5 5 0 0 1 8-4M17 12a5 5 0 0 1-8 4" stroke="#FFF" stroke-width="3" fill="none" stroke-linecap="round" />
-            </svg>`;
+
+        const escapedFallback = fallbackSVG.replace(/"/g, "'");
+
+        if (key) {
+            return `<img src="logos/${key}.${ext}" class="brand-logo-img" alt="${key}" onerror="this.onerror=null; this.outerHTML='${escapedFallback}';" style="width:100%; height:100%; object-fit:contain; border-radius:50%; background:#fff; display:block;" />`;
         }
-        if (n.includes('BP') || n.includes('BRITISH PETROLEUM')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#00853F" />
-                <path d="M12 3 L13.5 8 L18.5 6.5 L15.5 10.5 L20.5 12 L15.5 13.5 L18.5 17.5 L13.5 16 L12 21 L10.5 16 L5.5 17.5 L8.5 13.5 L3.5 12 L8.5 10.5 L5.5 6.5 L10.5 8 Z" fill="#FFD100" />
-                <circle cx="12" cy="12" r="4.5" fill="#FFFFFF" />
-                <circle cx="12" cy="12" r="2.5" fill="#00853F" />
-            </svg>`;
-        }
-        if (n.includes('GALP')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FF6600" />
-                <path d="M12 4a8 8 0 0 1 8 8c0 4.4-3.6 8-8 8s-8-3.6-8-8c0-2 1-4 3-5.5S10 4 12 4z" fill="#FFF" opacity="0.85"/>
-                <circle cx="12" cy="12" r="3.5" fill="#FF6600" />
-            </svg>`;
-        }
-        if (n.includes('SHELL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FFD500" />
-                <path d="M12 4.5C9.5 4.5 7 6.5 7 10c0 2.5 1.5 5 3 6l-0.8 1.5h5.6L14 16c1.5-1 3-3.5 3-6 0-3.5-2.5-5.5-5-5.5z" fill="#E30613" />
-                <path d="M12 6.2c-1.5 0-3 1.2-3 3.8 0 1.8 1 3.5 2.2 4.2l-0.4 1h2.4l-0.4-1c1.2-.7 2.2-2.4 2.2-4.2 0-2.6-1.5-3.8-3-3.8z" fill="#FFD500" />
-            </svg>`;
-        }
-        if (n.includes('PLENOIL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#002D62" />
-                <path d="M12 4.5s5 4 5 8a5 5 0 0 1-10 0c0-4 5-8 5-8z" fill="#FF6600" />
-                <path d="M12 6s3 2.5 3 6a3 3 0 0 1-6 0c0-3.5 3-6 3-6z" fill="#FFF" opacity="0.35" />
-            </svg>`;
-        }
-        if (n.includes('BALLENOIL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#00529B" />
-                <path d="M5 12c0-3.5 3-6.5 7-6.5s7 3 7 6.5c0 2-1.5 3.5-3.5 3.5-.8 0-1.5-.3-2-.7l-.5.7h-2l-.5-.7c-.5.4-1.2.7-2 .7-2 0-3.5-1.5-3.5-3.5z" fill="#FFF" />
-                <circle cx="12" cy="12" r="2" fill="#00529B" />
-            </svg>`;
-        }
-        if (n.includes('PETROPRIX')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#0099FF" />
-                <path d="M8 7h5a3.5 3.5 0 0 1 0 7H10v4H8V7zm2 2v3h3a1.5 1.5 0 1 0 0-3H10z" fill="#FFF" />
-                <circle cx="15.5" cy="15.5" r="3.5" fill="#00CC66" />
-            </svg>`;
-        }
-        if (n.includes('AVIA')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#E30613" />
-                <path d="M12 5.5 L17.5 16.5 L6.5 16.5 Z" fill="#FFF" />
-                <circle cx="12" cy="12.5" r="2.5" fill="#E30613" />
-            </svg>`;
-        }
-        if (n.includes('Q8')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FF8000" />
-                <path d="M12 6a5 5 0 1 0 3 9l2 2v-1a5 5 0 0 0-5-10zm0 2a3 3 0 1 1-3 3 3 3 0 0 1 3-3z" fill="#FFF" />
-                <path d="M15 15l2 2" stroke="#FFF" stroke-width="2" stroke-linecap="round" />
-            </svg>`;
-        }
-        if (n.includes('CAMPSA')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#002D62" />
-                <path d="M6 7h12v2H6V7zm0 4h12v2H6v-2zm0 4h12v2H6v-2z" fill="#FFD100" />
-                <path d="M9 5h6v14H9V5z" fill="#E30613" />
-            </svg>`;
-        }
-        if (n.includes('PETRONOR')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#006633" />
-                <path d="M6 8 L18 8 L12 18 Z" fill="#FFF" />
-                <path d="M8 9 L16 9 L12 16 Z" fill="#E30613" />
-            </svg>`;
-        }
-        if (n.includes('BONAREA')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#00A2E8" />
-                <path d="M8 8a4 4 0 0 1 8 0v8a4 4 0 0 1-8 0V8z" fill="#FFF" />
-                <circle cx="12" cy="12" r="2.5" fill="#3F48CC" />
-            </svg>`;
-        }
-        if (n.includes('VALCARCE')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#1A1A1A" />
-                <path d="M12 4.5 L19.5 12 L12 19.5 L4.5 12 Z" fill="#E30613" />
-                <circle cx="12" cy="12" r="3.5" fill="#FFF" />
-            </svg>`;
-        }
-        if (n.includes('CARREFOUR')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#0056B3" />
-                <path d="M12 6a6 6 0 0 0-6 6c0 3.3 2.7 6 6 6l-2-6 2-6z" fill="#E30613" />
-                <path d="M12 6c3.3 0 6 2.7 6 6 0 3.3-2.7 6-6 6l2-6-2-6z" fill="#FFF" />
-            </svg>`;
-        }
-        if (n.includes('ALCAMPO')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#E30613" />
-                <path d="M7 14c1.5-2 4-5 6-5s3 2 3 3-1 3-3 3-4-1-6-1z" fill="#FFF" />
-                <circle cx="15" cy="11" r="2" fill="#E30613" />
-            </svg>`;
-        }
-        if (n.includes('EROSKI')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#E30613" />
-                <circle cx="12" cy="12" r="5" fill="#FFF" />
-                <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="#0056B3" />
-            </svg>`;
-        }
-        if (n.includes('MEROIL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#00529B" />
-                <path d="M7 17 V7 L12 12 L17 7 V17" stroke="#00CC66" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>`;
-        }
-        if (n.includes('DISA')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FFCC00" />
-                <path d="M12 12c1.5-1.5 3-1 3 1s-1.5 2-3 0c-1.5 2-3 0-3-0s1.5-2.5 3-1z" fill="#E30613" />
-                <circle cx="12" cy="12" r="1.5" fill="#FFF" />
-            </svg>`;
-        }
-        if (n.includes('TAMOIL')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FFF" stroke="#E30613" stroke-width="1" />
-                <circle cx="12" cy="12" r="7" fill="#00529B" />
-                <path d="M8 12 L16 12" stroke="#FFF" stroke-width="2" />
-            </svg>`;
-        }
-        if (n.includes('ESCLAT') || n.includes('BONPREU')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#FF6600" />
-                <path d="M6 12a6 6 0 0 1 12 0c0 3.3-6 8-6 8s-6-4.7-6-8z" fill="#002D62" />
-                <circle cx="12" cy="12" r="2" fill="#FFF" />
-            </svg>`;
-        }
-        if (n.includes('SARAS')) {
-            return `<svg viewBox="0 0 24 24" style="display:block;">
-                <circle cx="12" cy="12" r="10" fill="#00529B" />
-                <path d="M6 12 A6 6 0 0 1 18 12 Z" fill="#FF6600" />
-            </svg>`;
-        }
-        
-        return `<svg viewBox="0 0 24 24" style="display:block;">
-            <circle cx="12" cy="12" r="10" fill="#475569" />
-            <path d="M8.5 7.5h5c.8 0 1.5.7 1.5 1.5v7.5H8.5V7.5zm7.5 3.8c0-1.1-.8-1.9-1.9-1.9H13v6c0 .4.4.8.8.8s.8-.4.8-.8v-3h.8v2.2c0 .4.4.8.8.8s.8-.4.8-.8v-3.8zm-5-2.2H9.8v1.5h1.2V9.1zm0 3H9.8v1.5h1.2v-1.5z" fill="#FFF" />
-        </svg>`;
+
+        return fallbackSVG;
+    }
     }
 
     formatearMarca(nombre) {

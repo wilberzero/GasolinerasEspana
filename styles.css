@@ -634,6 +634,14 @@ to { transform: rotate(360deg); }
     font-weight: 700;
 }
 
+.brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
 .search-controls { padding: 8px; }

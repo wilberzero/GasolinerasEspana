@@ -50,6 +50,21 @@ class GasolinerasApp {
             this.currentZoom = this.mapa.getZoom();
             this.aplicarFiltrosZoomMapa();
         });
+
+        // NUEVO: Escuchar el cierre de popups para deseleccionar
+        this.mapa.on('popupclose', () => {
+            setTimeout(() => {
+                let popupOpen = false;
+                this.marcadores.forEach(m => {
+                    if (m.isPopupOpen()) popupOpen = true;
+                });
+                if (!popupOpen) {
+                    document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
+                    this.marcadores.forEach(m => m.selected = false);
+                    this.setInfo(`⛽ ${this.estacionesActuales.length} gasolineras encontradas en ${this.radio}km`);
+                }
+            }, 50);
+        });
     }
 
     // CORREGIDO: Mostrar solo las 5 mejores (más baratas y cercanas)
@@ -556,7 +571,16 @@ class GasolinerasApp {
     seleccionarEstacion(estacion) {
         document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
         const selectedCard = document.querySelector(`[data-id="${estacion.id}"]`);
-        if (selectedCard) selectedCard.classList.add('selected');
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+            selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Sincronizar apertura de popup si se selecciona desde el listado
+        const marcadorAsociado = this.marcadores.find(m => m.options.title === estacion.nombre);
+        if (marcadorAsociado && !marcadorAsociado.isPopupOpen()) {
+            marcadorAsociado.openPopup();
+        }
         
         this.marcadores.forEach(marker => {
             marker.selected = (marker.options.title === estacion.nombre);
@@ -591,8 +615,8 @@ class GasolinerasApp {
                         </div>
                         <div class="pin-pointer"></div>
                     </div>`,
-                    iconSize: [95, 34],
-                    iconAnchor: [47.5, 34]
+                    iconSize: [68, 26],
+                    iconAnchor: [34, 26]
                 }),
                 title: e.nombre,
                 className: clase

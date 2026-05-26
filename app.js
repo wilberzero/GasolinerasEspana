@@ -652,6 +652,7 @@ class GasolinerasApp {
         else if (n.includes('TAMOIL')) key = 'tamoil';
         else if (n.includes('ESCLAT') || n.includes('BONPREU')) key = 'esclat';
         else if (n.includes('SARAS')) key = 'saras';
+        else if (n.includes('BEROIL')) key = 'beroil';
 
         // Custom inline SVGs as bulletproof fallback if image loading fails
         let fallbackSVG = '';
@@ -700,6 +701,8 @@ class GasolinerasApp {
             fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#FF6600" /><path d="M6 12a6 6 0 0 1 12 0c0 3.3-6 8-6 8s-6-4.7-6-8z" fill="#002D62" /><circle cx="12" cy="12" r="2" fill="#FFF" /></svg>`;
         } else if (n.includes('SARAS')) {
             fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00529B" /><path d="M6 12 A6 6 0 0 1 18 12 Z" fill="#FF6600" /></svg>`;
+        } else if (n.includes('BEROIL')) {
+            fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#00994C" /><path d="M7 6h6a3 3 0 0 1 0 6H7V6zm0 6h6a3 3 0 0 1 0 6H7v-6zm2-4v2h4a1 1 0 1 0 0-2H9zm0 6v2h4a1 1 0 1 0 0-2H9z" fill="#FFCC00" /></svg>`;
         } else {
             fallbackSVG = `<svg viewBox="0 0 24 24" style="display:block;"><circle cx="12" cy="12" r="10" fill="#475569" /><path d="M8.5 7.5h5c.8 0 1.5.7 1.5 1.5v7.5H8.5V7.5zm7.5 3.8c0-1.1-.8-1.9-1.9-1.9H13v6c0 .4.4.8.8.8s.8-.4.8-.8v-3h.8v2.2c0 .4.4.8.8.8s.8-.4.8-.8v-3.8zm-5-2.2H9.8v1.5h1.2V9.1zm0 3H9.8v1.5h1.2v-1.5z" fill="#FFF" /></svg>`;
         }
@@ -738,6 +741,7 @@ class GasolinerasApp {
         if (n.includes('ESCLAT')) return 'Esclat';
         if (n.includes('BONPREU')) return 'Bonpreu';
         if (n.includes('SARAS')) return 'Saras';
+        if (n.includes('BEROIL')) return 'Beroil';
         
         return nombre.split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())

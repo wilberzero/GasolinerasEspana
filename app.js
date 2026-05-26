@@ -712,7 +712,6 @@ class GasolinerasApp {
 
         return fallbackSVG;
     }
-    }
 
     formatearMarca(nombre) {
         const n = nombre.toUpperCase();

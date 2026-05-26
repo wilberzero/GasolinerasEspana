@@ -497,11 +497,11 @@ to { transform: rotate(360deg); }
 }
 
 /* Colores para los bordes y textos según el rango de precio */
-.custom-map-pin.muy-barato { border-color: #059669; }
-.custom-map-pin.barato { border-color: #84cc16; }
-.custom-map-pin.medio { border-color: #eab308; }
-.custom-map-pin.caro { border-color: #f97316; }
-.custom-map-pin.muy-caro { border-color: #dc2626; }
+.custom-map-pin.muy-barato { border-color: #059669; background: #e6f9f0; }
+.custom-map-pin.barato { border-color: #84cc16; background: #f2fae1; }
+.custom-map-pin.medio { border-color: #eab308; background: #fff9db; }
+.custom-map-pin.caro { border-color: #f97316; background: #ffeedb; }
+.custom-map-pin.muy-caro { border-color: #dc2626; background: #ffebeb; }
 
 .pin-logo-area {
     width: 24px;

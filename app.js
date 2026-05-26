@@ -562,13 +562,13 @@ class GasolinerasApp {
                 const id = card.dataset.id;
                 const estacion = estaciones.find(e => e.id === id);
                 if (estacion) {
-                    this.seleccionarEstacion(estacion);
+                    this.seleccionarEstacion(estacion, true); // Centrar mapa al pulsar desde abajo
                 }
             });
         });
     }
 
-    seleccionarEstacion(estacion) {
+    seleccionarEstacion(estacion, centrarMapa = true) {
         document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
         const selectedCard = document.querySelector(`[data-id="${estacion.id}"]`);
         if (selectedCard) {
@@ -576,17 +576,15 @@ class GasolinerasApp {
             selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
-        // Sincronizar apertura de popup si se selecciona desde el listado
-        const marcadorAsociado = this.marcadores.find(m => m.options.title === estacion.nombre);
-        if (marcadorAsociado && !marcadorAsociado.isPopupOpen()) {
-            marcadorAsociado.openPopup();
-        }
-        
+        // CORREGIDO: Marcar únicamente la gasolinera seleccionada por su ID único (no todas las de la marca)
         this.marcadores.forEach(marker => {
-            marker.selected = (marker.options.title === estacion.nombre);
+            marker.selected = (marker.id === estacion.id);
         });
         
-        this.mapa.setView([estacion.lat, estacion.lng], 16);
+        if (centrarMapa) {
+            this.mapa.setView([estacion.lat, estacion.lng], 16);
+        }
+        
         const nombreFormateado = this.formatearMarca(estacion.nombre);
         this.setInfo(`📍 ${nombreFormateado} - ${estacion.precio.toFixed(3)}€`);
     }
@@ -606,30 +604,36 @@ class GasolinerasApp {
             const marker = L.marker([e.lat, e.lng], {
                 icon: L.divIcon({
                     className: `mapa-marker ${clase}`,
+                    // NUEVO: Texto en 2 líneas: Nombre de estación arriba, Precio abajo y Logo a la izquierda
                     html: `<div class="custom-map-pin ${clase}">
                         <div class="pin-logo-area">
                             ${logoSVG}
                         </div>
-                        <div class="pin-price-area">
-                            ${e.precio.toFixed(3)}<span class="pin-currency">€</span>
+                        <div class="pin-text-area">
+                            <div class="pin-brand-title">${nombreFormateado}</div>
+                            <div class="pin-price-val">${e.precio.toFixed(3)}<span class="pin-currency">€</span></div>
                         </div>
                         <div class="pin-pointer"></div>
                     </div>`,
-                    iconSize: [68, 26],
-                    iconAnchor: [34, 26]
+                    iconSize: [80, 30],
+                    iconAnchor: [40, 30]
                 }),
                 title: e.nombre,
                 className: clase
             });
+
+            // Asignar ID único al marcador
+            marker.id = e.id;
 
             marker.bindPopup(`
                 <strong>${nombreFormateado}</strong><br>
                 ${e.direccion}<br>
                 <strong>${e.precio.toFixed(3)}€</strong> - ${e.distancia.toFixed(1)} km<br>
                 🕒 ${this.formatearHorario(e.horario)}
-            `);
+            `, { autoPan: false }); // autoPan: false evita que el mapa se desplace al abrir el popup
 
-            marker.on('click', () => this.seleccionarEstacion(e));
+            // centrarMapa = false al pulsar sobre el marcador en el mapa
+            marker.on('click', () => this.seleccionarEstacion(e, false));
             marker.selected = false;
             this.marcadores.push(marker);
             marker.addTo(this.mapa);
@@ -758,6 +762,39 @@ class GasolinerasApp {
                 <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="#0056B3" />
             </svg>`;
         }
+        if (n.includes('MEROIL')) {
+            return `<svg viewBox="0 0 24 24" style="display:block;">
+                <circle cx="12" cy="12" r="10" fill="#00529B" />
+                <path d="M7 17 V7 L12 12 L17 7 V17" stroke="#00CC66" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>`;
+        }
+        if (n.includes('DISA')) {
+            return `<svg viewBox="0 0 24 24" style="display:block;">
+                <circle cx="12" cy="12" r="10" fill="#FFCC00" />
+                <path d="M12 12c1.5-1.5 3-1 3 1s-1.5 2-3 0c-1.5 2-3 0-3-0s1.5-2.5 3-1z" fill="#E30613" />
+                <circle cx="12" cy="12" r="1.5" fill="#FFF" />
+            </svg>`;
+        }
+        if (n.includes('TAMOIL')) {
+            return `<svg viewBox="0 0 24 24" style="display:block;">
+                <circle cx="12" cy="12" r="10" fill="#FFF" stroke="#E30613" stroke-width="1" />
+                <circle cx="12" cy="12" r="7" fill="#00529B" />
+                <path d="M8 12 L16 12" stroke="#FFF" stroke-width="2" />
+            </svg>`;
+        }
+        if (n.includes('ESCLAT') || n.includes('BONPREU')) {
+            return `<svg viewBox="0 0 24 24" style="display:block;">
+                <circle cx="12" cy="12" r="10" fill="#FF6600" />
+                <path d="M6 12a6 6 0 0 1 12 0c0 3.3-6 8-6 8s-6-4.7-6-8z" fill="#002D62" />
+                <circle cx="12" cy="12" r="2" fill="#FFF" />
+            </svg>`;
+        }
+        if (n.includes('SARAS')) {
+            return `<svg viewBox="0 0 24 24" style="display:block;">
+                <circle cx="12" cy="12" r="10" fill="#00529B" />
+                <path d="M6 12 A6 6 0 0 1 18 12 Z" fill="#FF6600" />
+            </svg>`;
+        }
         
         return `<svg viewBox="0 0 24 24" style="display:block;">
             <circle cx="12" cy="12" r="10" fill="#475569" />
@@ -784,6 +821,12 @@ class GasolinerasApp {
         if (n.includes('CARREFOUR')) return 'Carrefour';
         if (n.includes('ALCAMPO')) return 'Alcampo';
         if (n.includes('EROSKI')) return 'Eroski';
+        if (n.includes('MEROIL')) return 'Meroil';
+        if (n.includes('DISA')) return 'Disa';
+        if (n.includes('TAMOIL')) return 'Tamoil';
+        if (n.includes('ESCLAT')) return 'Esclat';
+        if (n.includes('BONPREU')) return 'Bonpreu';
+        if (n.includes('SARAS')) return 'Saras';
         
         return nombre.split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())

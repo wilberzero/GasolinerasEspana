@@ -18,6 +18,8 @@ class GasolinerasApp {
         this.inicializacionTimeout = null;
         this.currentZoom = 13;
         this.estacionesActuales = []; // AÑADIDO: Para guardar las estaciones actuales
+        this.marcadorUsuario = null;
+        this.circuloPrecisionUsuario = null;
         this.init();
     }
 
@@ -581,9 +583,44 @@ class GasolinerasApp {
         this.setInfo(`📍 ${nombreFormateado} - ${estacion.precio.toFixed(3)}€`);
     }
 
+    actualizarMarcadorUsuario() {
+        if (!this.ubicacion || !this.mapa) return;
+
+        if (this.marcadorUsuario) {
+            this.mapa.removeLayer(this.marcadorUsuario);
+        }
+        if (this.circuloPrecisionUsuario) {
+            this.mapa.removeLayer(this.circuloPrecisionUsuario);
+        }
+
+        // Círculo de precisión de 100m en azul suave
+        this.circuloPrecisionUsuario = L.circle([this.ubicacion.lat, this.ubicacion.lng], {
+            radius: 100,
+            fillColor: '#1a56db',
+            fillOpacity: 0.12,
+            color: '#1a56db',
+            weight: 1,
+            opacity: 0.35
+        }).addTo(this.mapa);
+
+        // Círculo de la posición GPS (azul vibrante con borde blanco y sombra)
+        this.marcadorUsuario = L.circleMarker([this.ubicacion.lat, this.ubicacion.lng], {
+            radius: 8,
+            fillColor: '#1a56db',
+            fillOpacity: 0.95,
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            className: 'gps-user-marker'
+        }).addTo(this.mapa);
+    }
+
     actualizarMapa(estaciones) {
         this.marcadores.forEach(m => this.mapa.removeLayer(m));
         this.marcadores = [];
+
+        // Dibujar marcador de usuario si su GPS está activo
+        this.actualizarMarcadorUsuario();
 
         if (!estaciones.length) return;
 
@@ -751,6 +788,8 @@ class GasolinerasApp {
     setInfo(text) {
         const info = document.getElementById('mapaInfo');
         if (info) info.textContent = text;
+        const resInfo = document.getElementById('resultadosInfo');
+        if (resInfo) resInfo.textContent = text;
     }
 }
 

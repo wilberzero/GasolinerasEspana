@@ -51,19 +51,11 @@ class GasolinerasApp {
             this.aplicarFiltrosZoomMapa();
         });
 
-        // NUEVO: Escuchar el cierre de popups para deseleccionar
-        this.mapa.on('popupclose', () => {
-            setTimeout(() => {
-                let popupOpen = false;
-                this.marcadores.forEach(m => {
-                    if (m.isPopupOpen()) popupOpen = true;
-                });
-                if (!popupOpen) {
-                    document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
-                    this.marcadores.forEach(m => m.selected = false);
-                    this.setInfo(`⛽ ${this.estacionesActuales.length} gasolineras encontradas en ${this.radio}km`);
-                }
-            }, 50);
+        // NUEVO: Escuchar el click en cualquier zona vacía del mapa para deseleccionar
+        this.mapa.on('click', () => {
+            document.querySelectorAll('.gasolinera-card').forEach(c => c.classList.remove('selected'));
+            this.marcadores.forEach(m => m.selected = false);
+            this.setInfo(`⛽ ${this.estacionesActuales.length} gasolineras encontradas en ${this.radio}km`);
         });
     }
 
@@ -624,13 +616,6 @@ class GasolinerasApp {
 
             // Asignar ID único al marcador
             marker.id = e.id;
-
-            marker.bindPopup(`
-                <strong>${nombreFormateado}</strong><br>
-                ${e.direccion}<br>
-                <strong>${e.precio.toFixed(3)}€</strong> - ${e.distancia.toFixed(1)} km<br>
-                🕒 ${this.formatearHorario(e.horario)}
-            `, { autoPan: false }); // autoPan: false evita que el mapa se desplace al abrir el popup
 
             // centrarMapa = false al pulsar sobre el marcador en el mapa
             marker.on('click', () => this.seleccionarEstacion(e, false));

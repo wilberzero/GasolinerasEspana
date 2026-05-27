@@ -71,7 +71,7 @@ class GasolinerasApp {
             
             this.marcadores.forEach(marker => {
                 const esMejor = mejoresEstaciones.some(est => 
-                    marker.options.title === est.nombre
+                    marker.id === est.id
                 );
                 const estaSeleccionado = marker.selected;
                 
@@ -79,12 +79,13 @@ class GasolinerasApp {
                     // Mostrar normal las 5 mejores y las seleccionadas
                     if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
                     const markerElement = marker.getElement();
-                    if (markerElement) markerElement.style.opacity = '1';
+                    if (markerElement) {
+                        markerElement.style.opacity = '1';
+                        markerElement.style.pointerEvents = 'auto';
+                    }
                 } else {
-                    // Mostrar transparente las demás
-                    if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
-                    const markerElement = marker.getElement();
-                    if (markerElement) markerElement.style.opacity = '0.3';
+                    // COMPLETAMENTE OCULTAR del mapa para evitar colapso y saturación visual
+                    if (this.mapa.hasLayer(marker)) this.mapa.removeLayer(marker);
                 }
             });
         } else {
@@ -92,7 +93,10 @@ class GasolinerasApp {
             this.marcadores.forEach(marker => {
                 if (!this.mapa.hasLayer(marker)) this.mapa.addLayer(marker);
                 const markerElement = marker.getElement();
-                if (markerElement) markerElement.style.opacity = '1';
+                if (markerElement) {
+                    markerElement.style.opacity = '1';
+                    markerElement.style.pointerEvents = 'auto';
+                }
             });
         }
     }
@@ -567,7 +571,7 @@ class GasolinerasApp {
         const selectedCard = document.querySelector(`[data-id="${estacion.id}"]`);
         if (selectedCard) {
             selectedCard.classList.add('selected');
-            selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            selectedCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         // CORREGIDO: Marcar únicamente la gasolinera seleccionada por su ID único (no todas las de la marca)

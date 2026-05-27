@@ -61,12 +61,12 @@ class GasolinerasApp {
         });
     }
 
-    // CORREGIDO: Mostrar solo las 40 mejores (más baratas y cercanas)
+    // CORREGIDO: Mostrar solo las 20 mejores (más baratas y cercanas)
     aplicarFiltrosZoomMapa() {
         const zoom = this.currentZoom;
         
         if (zoom < 13) {
-            // Calcular las 40 mejores estaciones (precio + distancia)
+            // Calcular las 20 mejores estaciones (precio + distancia)
             const mejoresEstaciones = this.calcularMejoresEstaciones();
             
             this.marcadores.forEach(marker => {
@@ -101,7 +101,7 @@ class GasolinerasApp {
         }
     }
 
-    // NUEVA FUNCIÓN: Calcular las 40 mejores estaciones
+    // NUEVA FUNCIÓN: Calcular las 20 mejores estaciones
     calcularMejoresEstaciones() {
         if (!this.estacionesActuales.length) return [];
         
@@ -125,10 +125,10 @@ class GasolinerasApp {
             return { ...est, puntuacion: puntuacionTotal };
         });
         
-        // Ordenar por puntuación descendente y tomar las 40 mejores
+        // Ordenar por puntuación descendente y tomar las 20 mejores
         return estacionesConPuntuacion
             .sort((a, b) => b.puntuacion - a.puntuacion)
-            .slice(0, 40);
+            .slice(0, 20);
     }
 
     cargarPreferencias() {
